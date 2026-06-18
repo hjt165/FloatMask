@@ -10,7 +10,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,jar
 
 # 依赖配置
-requirements = python3,kivy==2.3.0,pillow,pyjnius
+requirements = python3,kivy,pillow,pyjnius
 
 # 界面配置
 fullscreen = 0
