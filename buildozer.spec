@@ -36,6 +36,7 @@ version.code = 1
 # 构建配置
 android.debuggable = 0
 android.release_artifact = apk
+android.accept_sdk_license = True
 
 # 日志配置
 log_level = 2
