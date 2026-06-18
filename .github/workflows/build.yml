@@ -32,34 +32,29 @@ jobs:
           pip install Cython==0.29.34
           pip install git+https://github.com/kivy/buildozer.git
 
-      - name: Pre-create Buildozer SDK with licenses
+      - name: Build APK (download SDK only)
+        continue-on-error: true
+        run: |
+          buildozer -v android debug 2>&1 | tee build-first.log; true
+
+      - name: Accept licenses using Buildozer's sdkmanager
         run: |
           BUILD_SDK="$HOME/.buildozer/android/platform/android-sdk"
-          mkdir -p "$BUILD_SDK/licenses"
-          printf '\n24333f8a63b6825ea9c5514f83c2829b004d1fee' > "$BUILD_SDK/licenses/android-sdk-license"
-          printf '\n84831b9409646a918e30573bab4c9c91346d8abd' > "$BUILD_SDK/licenses/android-sdk-preview-license"
-          echo "Pre-created licenses at: $BUILD_SDK/licenses/"
-          cat "$BUILD_SDK/licenses/android-sdk-license"
+          echo "=== SDK directory ==="
+          ls -la "$BUILD_SDK/" 2>/dev/null || echo "No SDK dir"
+          echo "=== SDK tools ==="
+          ls "$BUILD_SDK/tools/bin/" 2>/dev/null || echo "No tools/bin"
+          if [ -f "$BUILD_SDK/tools/bin/sdkmanager" ]; then
+            echo "Accepting licenses..."
+            yes | "$BUILD_SDK/tools/bin/sdkmanager" --sdk_root="$BUILD_SDK" --licenses || true
+            echo "=== Licenses ==="
+            ls -la "$BUILD_SDK/licenses/" 2>/dev/null || echo "No licenses dir"
+          else
+            echo "sdkmanager not found, trying cmdline-tools..."
+            ls "$BUILD_SDK/cmdline-tools/" 2>/dev/null || echo "No cmdline-tools"
+          fi
 
-      - name: Build APK (attempt 1 - download SDK)
-        run: |
-          buildozer -v android debug 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
-
-      - name: Fix licenses after SDK download
-        if: failure()
-        run: |
-          BUILD_SDK="$HOME/.buildozer/android/platform/android-sdk"
-          echo "Buildozer SDK dir contents:"
-          ls -la "$BUILD_SDK/" 2>/dev/null || echo "SDK dir not found"
-          ls -la "$BUILD_SDK/licenses/" 2>/dev/null || echo "Licenses dir not found"
-          mkdir -p "$BUILD_SDK/licenses"
-          printf '\n24333f8a63b6825ea9c5514f83c2829b004d1fee' > "$BUILD_SDK/licenses/android-sdk-license"
-          printf '\n84831b9409646a918e30573bab4c9c91346d8abd' > "$BUILD_SDK/licenses/android-sdk-preview-license"
-          echo "Licenses now at:"
-          cat "$BUILD_SDK/licenses/android-sdk-license"
-
-      - name: Build APK (attempt 2 - with licenses)
-        if: failure()
+      - name: Build APK (retry with licenses)
         run: |
           buildozer -v android debug 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
 
@@ -71,10 +66,12 @@ jobs:
           retention-days: 30
         if: success()
 
-      - name: Upload build log
+      - name: Upload build logs
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: build.log
+          name: build-logs
+          path: |
+            build-first.log
+            build.log
           retention-days: 7
         if: always()
