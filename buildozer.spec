@@ -26,8 +26,8 @@ android.minapi = 24
 # NDK配置（由p4a自动选择推荐版本）
 # android.ndk = 27c
 
-# CPU架构支持（只打包arm64减小体积）
-android.archs = arm64-v8a
+# CPU架构支持（添加x86_64支持模拟器测试）
+android.archs = arm64-v8a,x86_64
 
 # Assets目录（包含libs/overlay-touch-handler.jar等）
 android.asset_dir = assets
