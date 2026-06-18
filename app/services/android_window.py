@@ -196,7 +196,6 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PixelFormat = autoclass('android.view.PixelFormat')
             LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
 
             view = self._create_overlay_view(width, height, color_index)
@@ -213,7 +212,7 @@ class AndroidWindowManager:
                 int(height),
                 LayoutParams.TYPE_APPLICATION_OVERLAY,
                 self._get_flags(touch_through),
-                PixelFormat.TRANSLUCENT
+                -3
             )
             self._params.x = int(x)
             self._params.y = int(y)

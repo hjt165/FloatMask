@@ -29,6 +29,9 @@ android.minapi = 24
 # CPU架构支持（只打包arm64减小体积）
 android.archs = arm64-v8a
 
+# Assets目录（包含libs/overlay-touch-handler.jar等）
+android.asset_dir = assets
+
 # 版本配置
 version = 1.0.0
 version.code = 1

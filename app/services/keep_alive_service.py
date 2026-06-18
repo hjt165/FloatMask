@@ -69,12 +69,10 @@ class KeepAliveService:
                 channel.setDescription('FloatMask悬浮窗后台服务')
                 nm.createNotificationChannel(channel)
 
-            R = autoclass('android.R')
-
             notification = Builder(activity, channel_id) \
                 .setContentTitle('FloatMask') \
                 .setContentText('悬浮框服务正在运行') \
-                .setSmallIcon(R.drawable.ic_menu_info_details) \
+                .setSmallIcon(17301543) \
                 .setOngoing(True) \
                 .build()
 
