@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Kivy
+*.kv~
+
+# Buildozer
+bin/
+.buildozer/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.apk
+*.aab
+*.keystore
+.pytest_cache/
+*.log
+
+# Tools
+tools/overlay_test/build/
+tools/platform-tools/
+
+# Temp
+*.tmp
+*.bak

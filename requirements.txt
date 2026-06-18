@@ -1,0 +1,13 @@
+# FloatMask项目依赖列表
+
+# 核心UI框架
+kivy>=2.2.0
+
+# Android API访问（用于悬浮窗权限和原生功能）
+pyjnius>=1.4.1
+
+# 图像处理（Kivy Text provider）
+Pillow>=9.0.0
+
+# 开发和测试
+pytest>=7.0.0
