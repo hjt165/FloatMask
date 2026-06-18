@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+env:
+  ANDROID_HOME: /home/runner/android-sdk
+
 jobs:
   build:
     name: Build FloatMask APK
@@ -33,7 +36,7 @@ jobs:
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip -O cmdtools.zip
           unzip -q -o cmdtools.zip -d /tmp/cmdtools
           mv /tmp/cmdtools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-          echo "SDK cmdline tools installed at $ANDROID_HOME"
+          ls -la $ANDROID_HOME/cmdline-tools/latest/bin/
 
       - name: Accept Android SDK licenses
         run: |
