@@ -7,9 +7,6 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-env:
-  ANDROID_HOME: /home/runner/android-sdk
-
 jobs:
   build:
     name: Build FloatMask APK
@@ -29,30 +26,40 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev automake autopoint gettext
 
-      - name: Install Android SDK command-line tools
-        run: |
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          cd /tmp
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip -O cmdtools.zip
-          unzip -q -o cmdtools.zip -d /tmp/cmdtools
-          mv /tmp/cmdtools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin/
-
-      - name: Accept Android SDK licenses
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      - name: Install Android SDK packages
-        run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-33"
-
       - name: Install Buildozer
         run: |
           pip install --upgrade pip
           pip install Cython==0.29.34
           pip install git+https://github.com/kivy/buildozer.git
 
-      - name: Build APK
+      - name: Pre-create Buildozer SDK with licenses
+        run: |
+          BUILD_SDK="$HOME/.buildozer/android/platform/android-sdk"
+          mkdir -p "$BUILD_SDK/licenses"
+          printf '\n24333f8a63b6825ea9c5514f83c2829b004d1fee' > "$BUILD_SDK/licenses/android-sdk-license"
+          printf '\n84831b9409646a918e30573bab4c9c91346d8abd' > "$BUILD_SDK/licenses/android-sdk-preview-license"
+          echo "Pre-created licenses at: $BUILD_SDK/licenses/"
+          cat "$BUILD_SDK/licenses/android-sdk-license"
+
+      - name: Build APK (attempt 1 - download SDK)
+        run: |
+          buildozer -v android debug 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+
+      - name: Fix licenses after SDK download
+        if: failure()
+        run: |
+          BUILD_SDK="$HOME/.buildozer/android/platform/android-sdk"
+          echo "Buildozer SDK dir contents:"
+          ls -la "$BUILD_SDK/" 2>/dev/null || echo "SDK dir not found"
+          ls -la "$BUILD_SDK/licenses/" 2>/dev/null || echo "Licenses dir not found"
+          mkdir -p "$BUILD_SDK/licenses"
+          printf '\n24333f8a63b6825ea9c5514f83c2829b004d1fee' > "$BUILD_SDK/licenses/android-sdk-license"
+          printf '\n84831b9409646a918e30573bab4c9c91346d8abd' > "$BUILD_SDK/licenses/android-sdk-preview-license"
+          echo "Licenses now at:"
+          cat "$BUILD_SDK/licenses/android-sdk-license"
+
+      - name: Build APK (attempt 2 - with licenses)
+        if: failure()
         run: |
           buildozer -v android debug 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
 
