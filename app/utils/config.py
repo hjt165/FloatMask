@@ -73,7 +73,7 @@ class ConfigManager:
         """
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             # 获取SharedPreferences
@@ -125,7 +125,7 @@ class ConfigManager:
         """
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             # 获取SharedPreferences
@@ -172,7 +172,7 @@ class ConfigManager:
         if platform == 'android':
             # Android内部存储
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
             return os.path.join(activity.getFilesDir().getAbsolutePath(), 'floatmask_config.json')
         else:

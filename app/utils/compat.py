@@ -49,9 +49,28 @@ class CompatManager:
         try:
             from jnius import autoclass
             Build = autoclass('android.os.Build')
-            return Build.VERSION.SDK_INT
+            sdk = Build.VERSION.SDK_INT
+            if sdk and int(sdk) > 0:
+                return int(sdk)
         except Exception:
-            return 0
+            pass
+        # Fallback: read system property
+        try:
+            from jnius import autoclass
+            System = autoclass('java.lang.System')
+            val = System.getProperty("android.os.Build.VERSION.SDK_INT")
+            if val:
+                return int(val)
+        except Exception:
+            pass
+        # Fallback: read from Activity's targetSdkVersion
+        try:
+            from jnius import autoclass
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            activity = PythonActivity.mActivity
+            return int(activity.getApplicationInfo().targetSdkVersion)
+        except Exception:
+            return 32
 
     def _get_property(self, prop_name):
         if platform != 'android':

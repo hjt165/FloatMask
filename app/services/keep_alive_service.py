@@ -47,7 +47,7 @@ class KeepAliveService:
         try:
             from jnius import autoclass
 
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             Context = autoclass('android.content.Context')
@@ -89,7 +89,7 @@ class KeepAliveService:
         try:
             from jnius import autoclass
 
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             Build = autoclass('android.os.Build')
@@ -107,7 +107,7 @@ class KeepAliveService:
         try:
             from jnius import autoclass
 
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             Context = autoclass('android.content.Context')

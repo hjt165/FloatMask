@@ -23,7 +23,7 @@ class StorageManager:
         if platform == 'android':
             try:
                 from jnius import autoclass
-                PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                PythonActivity = autoclass('org.kivy.android.PythonActivity')
                 activity = PythonActivity.mActivity
                 return os.path.join(
                     activity.getFilesDir().getAbsolutePath(),
@@ -87,7 +87,7 @@ class StorageManager:
     def _load_from_shared_preferences(self):
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             prefs = activity.getPreferences(0)
@@ -102,7 +102,7 @@ class StorageManager:
     def _save_to_shared_preferences(self, data):
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             prefs = activity.getPreferences(0)

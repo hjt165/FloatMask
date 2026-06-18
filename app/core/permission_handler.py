@@ -47,7 +47,7 @@ class PermissionHandler:
             # 获取Android API类
             Settings = autoclass('android.provider.Settings')
             Context = autoclass('android.content.Context')
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
 
             # 获取当前Activity
             activity = PythonActivity.mActivity
@@ -78,7 +78,7 @@ class PermissionHandler:
             Context = autoclass('android.content.Context')
             Intent = autoclass('android.content.Intent')
             Uri = autoclass('android.net.Uri')
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
 
             # 获取当前Activity
             activity = PythonActivity.mActivity
@@ -108,9 +108,19 @@ class PermissionHandler:
         try:
             from jnius import autoclass
             Build = autoclass('android.os.Build')
-            return Build.VERSION.SDK_INT
+            sdk = Build.VERSION.SDK_INT
+            if sdk and int(sdk) > 0:
+                return int(sdk)
         except Exception:
-            return 0
+            pass
+        # Fallback
+        try:
+            from jnius import autoclass
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            activity = PythonActivity.mActivity
+            return int(activity.getApplicationInfo().targetSdkVersion)
+        except Exception:
+            return 32
 
     def get_permission_status_text(self):
         """

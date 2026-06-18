@@ -45,7 +45,7 @@ class Logger:
     def _init_android_log(self):
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
             log_dir = activity.getFilesDir().getAbsolutePath()
             self.log_file = os.path.join(log_dir, 'floatmask.log')

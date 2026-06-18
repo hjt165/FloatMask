@@ -40,7 +40,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
             Settings = autoclass('android.provider.Settings')
             return Settings.canDrawOverlays(activity)
@@ -54,7 +54,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             Context = autoclass('android.content.Context')
@@ -83,7 +83,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             context = activity.getApplicationContext()
@@ -98,7 +98,7 @@ class AndroidWindowManager:
             if not os.path.exists(jar_path):
                 try:
                     from jnius import autoclass
-                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    PythonActivity = autoclass('org.kivy.android.PythonActivity')
                     activity = PythonActivity.mActivity
                     asset_manager = activity.getAssets()
 
@@ -141,7 +141,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             LinearLayout = autoclass('android.widget.LinearLayout')
@@ -201,7 +201,7 @@ class AndroidWindowManager:
 
             view = self._create_overlay_view(width, height, color_index)
             if not view:
-                PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                PythonActivity = autoclass('org.kivy.android.PythonActivity')
                 activity = PythonActivity.mActivity
                 View = autoclass('android.view.View')
                 Color = autoclass('android.graphics.Color')
@@ -242,7 +242,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             DisplayMetrics = autoclass('android.util.DisplayMetrics')
@@ -385,7 +385,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             LinearLayout = autoclass('android.widget.LinearLayout')
@@ -484,7 +484,7 @@ class AndroidWindowManager:
 
         try:
             from jnius import autoclass
-            PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
             activity = PythonActivity.mActivity
 
             outer = self
