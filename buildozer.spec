@@ -42,7 +42,7 @@ android.accept_sdk_license = True
 log_level = 2
 
 # P4Abootstrap配置
-p4a.bootstrap = python3
+p4a.bootstrap = sdl2
 
 # 签名配置（调试用debug签名即可）
 # android.release_artifact = apk
