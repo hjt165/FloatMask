@@ -287,6 +287,24 @@ class OverlayManager:
         if self._use_native and self.native_overlay:
             self.native_overlay.set_passthrough(enabled)
 
+    def pause(self):
+        """App 进入后台时调用：临时隐藏覆盖层"""
+        if self._use_native and self.native_overlay and self.native_overlay.is_visible:
+            self.native_overlay.hide_temp()
+            logger.info('OverlayManager', '覆盖层已暂停(后台隐藏)')
+        elif self.overlay and self._is_running:
+            self.overlay.close()
+            logger.info('OverlayManager', 'Kivy覆盖层已暂停(后台隐藏)')
+
+    def resume(self):
+        """App 回到前台时调用：恢复覆盖层"""
+        if self._use_native and self.native_overlay:
+            self.native_overlay.restore()
+            logger.info('OverlayManager', '覆盖层已恢复(前台显示)')
+        elif self.overlay:
+            self.overlay.open()
+            logger.info('OverlayManager', 'Kivy覆盖层已恢复(前台显示)')
+
     def _color_to_index(self, color):
         """将RGB颜色转换为颜色索引"""
         if isinstance(color, (list, tuple)) and len(color) >= 3:

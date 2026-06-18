@@ -1,13 +1,13 @@
-# FloatMask项目依赖列表
+# FloatMask project dependencies
 
-# 核心UI框架
+# Core UI framework
 kivy>=2.2.0
 
-# Android API访问（用于悬浮窗权限和原生功能）
+# Android API access (for overlay permission and native features)
 pyjnius>=1.4.1
 
-# 图像处理（Kivy Text provider）
+# Image processing (Kivy Text provider)
 Pillow>=9.0.0
 
-# 开发和测试
+# Development and testing
 pytest>=7.0.0

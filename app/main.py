@@ -413,10 +413,17 @@ class FloatMaskApp(App):
         return FloatMaskMain()
 
     def on_pause(self):
+        main = self.root
+        if main and main.overlay_manager.is_running:
+            main._overlay_was_running = True
+            main.overlay_manager.pause()
         return True
 
     def on_resume(self):
-        pass
+        main = self.root
+        if main and getattr(main, '_overlay_was_running', False):
+            main.overlay_manager.resume()
+            main._overlay_was_running = False
 
     def on_stop(self):
         pass

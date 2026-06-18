@@ -545,6 +545,28 @@ class AndroidWindowManager:
             flags |= LayoutParams.FLAG_NOT_TOUCHABLE
         return flags
 
+    def hide_view(self):
+        if platform != 'android' or not self._view:
+            return False
+        try:
+            View = autoclass('android.view.View')
+            self._view.setVisibility(View.INVISIBLE)
+            return True
+        except Exception as e:
+            logger.error('AndroidWindow', f'隐藏视图失败: {e}')
+            return False
+
+    def show_view(self):
+        if platform != 'android' or not self._view:
+            return False
+        try:
+            View = autoclass('android.view.View')
+            self._view.setVisibility(View.VISIBLE)
+            return True
+        except Exception as e:
+            logger.error('AndroidWindow', f'显示视图失败: {e}')
+            return False
+
     @property
     def is_showing(self):
         return self._is_showing
@@ -578,6 +600,12 @@ class NativeOverlay:
     def hide(self):
         return self.manager.remove_overlay_view()
 
+    def hide_temp(self):
+        return self.manager.hide_view()
+
+    def restore(self):
+        return self.manager.show_view()
+
     def move(self, x, y):
         return self.manager.update_position(x, y)
 
@@ -593,9 +621,6 @@ class NativeOverlay:
 
     def minimize(self):
         return self.manager.minimize()
-
-    def restore(self):
-        return self.manager.restore()
 
     def show_menu(self):
         return self.manager.show_quick_menu()
