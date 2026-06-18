@@ -7,7 +7,7 @@ package.domain = org.floatmask
 
 # 源代码配置
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,jar
+source.include_exts = py,png,jpg,kv,atlas,jar,ttc,ttf
 
 # 依赖配置
 requirements = python3,kivy,pillow,pyjnius
