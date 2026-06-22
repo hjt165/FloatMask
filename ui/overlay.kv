@@ -1,0 +1,123 @@
+# 悬浮窗KV样式
+# 定义悬浮窗的外观和交互
+
+<OverlayWidget>:
+    # 悬浮窗尺寸
+    size: dp(200), dp(120)
+    
+    # 绘制悬浮窗外观
+    canvas:
+        # 边框
+        Color:
+            rgba: 0, 0, 0, 1  # 黑色边框
+        Line:
+            rectangle: [self.x, self.y, self.width, self.height]
+            width: dp(2)
+        
+        # 填充色（半透明灰色）
+        Color:
+            rgba: 0.5, 0.5, 0.5, 0.5  # 半透明灰色
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    # 调整大小的手柄（右下角）
+    canvas.after:
+        Color:
+            rgba: 0.3, 0.3, 0.3, 0.8
+        Rectangle:
+            pos: self.right - dp(15), self.y
+            size: dp(15), dp(15)
+
+
+# 最小化模式的小圆点
+<MinimizedWidget>:
+    size: dp(30), dp(30)
+    
+    canvas:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 0.7
+        Ellipse:
+            pos: self.pos
+            size: self.size
+    
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 1
+        Label:
+            text: '●'
+            font_size: dp(12)
+            pos: self.center_x - dp(6), self.center_y - dp(6)
+
+
+# 快捷菜单样式
+<QuickMenu>:
+    size_hint: None, None
+    size: dp(180), dp(120)
+    
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 0.95
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10)]
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(5)
+        
+        # 透明度调节
+        BoxLayout:
+            size_hint_y: 0.3
+            
+            Label:
+                text: '透明度'
+                font_size: dp(14)
+                color: 0.3, 0.3, 0.3, 1
+                halign: 'left'
+                text_size: self.size
+            
+            Slider:
+                min: 0
+                max: 100
+                value: 50
+                size_hint_x: 0.6
+        
+        # 颜色选择按钮组
+        BoxLayout:
+            size_hint_y: 0.3
+            spacing: dp(5)
+            
+            Button:
+                text: '灰'
+                font_size: dp(12)
+                background_color: 0.5, 0.5, 0.5, 1
+            
+            Button:
+                text: '黑'
+                font_size: dp(12)
+                background_color: 0, 0, 0, 0.7
+            
+            Button:
+                text: '纯黑'
+                font_size: dp(12)
+                background_color: 0, 0, 0, 1
+        
+        # 操作按钮
+        BoxLayout:
+            size_hint_y: 0.3
+            spacing: dp(5)
+            
+            Button:
+                text: '最小化'
+                font_size: dp(12)
+                background_color: 0.9, 0.9, 0.9, 1
+                color: 0.3, 0.3, 0.3, 1
+            
+            Button:
+                text: '关闭'
+                font_size: dp(12)
+                background_color: 1, 0.3, 0.3, 1
+                color: 1, 1, 1, 1

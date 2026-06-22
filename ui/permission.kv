@@ -1,0 +1,105 @@
+# 权限引导页KV样式
+# 定义权限引导页的布局和外观
+
+<PermissionScreen>:
+    # 页面背景色
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1  # 白色背景
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(40)
+        spacing: dp(20)
+
+        # 占位空间（顶部）
+        Widget:
+            size_hint_y: 0.1
+
+        # 图标区域
+        BoxLayout:
+            size_hint_y: 0.25
+            orientation: 'vertical'
+
+            # 图标背景圆
+            canvas:
+                Color:
+                    rgba: 1, 0.93, 0.93, 1  # 浅红色背景
+                Ellipse:
+                    pos: self.center_x - dp(45), self.center_y - dp(45)
+                    size: dp(90), dp(90)
+
+            # 锁图标
+            Label:
+                text: '🔒'
+                font_size: dp(40)
+
+        # 标题
+        Label:
+            text: '需要悬浮窗权限'
+            font_size: dp(24)
+            color: 0.2, 0.2, 0.2, 1
+            bold: True
+            size_hint_y: 0.1
+
+        # 说明文字
+        Label:
+            text: '为了能够在其他应用上方显示\n悬浮遮挡框，需要您授权\n"显示在其他应用上层"权限'
+            font_size: dp(16)
+            color: 0.5, 0.5, 0.5, 1
+            halign: 'center'
+            text_size: self.size
+            size_hint_y: 0.2
+
+        # 占位空间
+        Widget:
+            size_hint_y: 0.1
+
+        # 跳转设置按钮
+        Button:
+            text: '前往系统设置'
+            font_size: dp(18)
+            size_hint_y: 0.1
+            background_color: 0.13, 0.59, 0.95, 1  # 蓝色 #2196F3
+            color: 1, 1, 1, 1
+            bold: True
+            on_press: root.open_settings()
+
+            canvas.before:
+                Color:
+                    rgba: self.background_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(8)]
+
+        # 返回按钮
+        Button:
+            text: '返回'
+            font_size: dp(16)
+            size_hint_y: 0.08
+            background_color: 0.95, 0.95, 0.95, 1
+            color: 0.4, 0.4, 0.4, 1
+            on_press: root.go_back()
+
+            canvas.before:
+                Color:
+                    rgba: self.background_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(8)]
+
+        # 提示文字
+        Label:
+            text: '💡 提示：授权后即可使用'
+            font_size: dp(14)
+            color: 0.6, 0.6, 0.6, 1
+            size_hint_y: 0.1
+
+        # 占位空间（底部）
+        Widget:
+            size_hint_y: 0.05
