@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 FloatMask - 智能字幕遮挡工具
 应用主入口
@@ -205,6 +206,9 @@ class FloatMaskApp(App):
         if check_overlay_permission():
             logger.info("权限已授予")
 
+=======
+from app.main import FloatMaskApp
+>>>>>>> 29e54356d094ee786c5a700356f6211bd74ff6bc
 
 if __name__ == '__main__':
     FloatMaskApp().run()

@@ -1,2 +1,18 @@
+<<<<<<< HEAD
 kivy>=2.3.0
 pyjnius>=1.5.0
+=======
+# FloatMask project dependencies
+
+# Core UI framework
+kivy>=2.2.0
+
+# Android API access (for overlay permission and native features)
+pyjnius>=1.4.1
+
+# Image processing (Kivy Text provider)
+Pillow>=9.0.0
+
+# Development and testing
+pytest>=7.0.0
+>>>>>>> 29e54356d094ee786c5a700356f6211bd74ff6bc

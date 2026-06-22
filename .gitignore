@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+<<<<<<< HEAD
 .Python
 build/
 develop-eggs/
@@ -36,7 +37,44 @@ bin/
 *.swp
 *.swo
 *~
+=======
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Kivy
+*.kv~
+
+# Buildozer
+bin/
+.buildozer/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+>>>>>>> 29e54356d094ee786c5a700356f6211bd74ff6bc
 
 # OS
 .DS_Store
 Thumbs.db
+<<<<<<< HEAD
+=======
+
+# Project specific
+*.apk
+*.aab
+*.keystore
+.pytest_cache/
+*.log
+
+# Tools
+tools/overlay_test/build/
+tools/platform-tools/
+
+# Temp
+*.tmp
+*.bak
+>>>>>>> 29e54356d094ee786c5a700356f6211bd74ff6bc
