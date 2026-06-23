@@ -65,8 +65,6 @@ presplash.filename =
 # 日志配置
 log_level = 2
 
-# 图片压缩配置
-android.add_resources = True
 
 [buildozer]
 log_level = 2
