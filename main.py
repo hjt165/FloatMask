@@ -35,6 +35,8 @@ from utils.permissions import (
     request_overlay_permission,
     open_overlay_settings
 )
+import utils.storage as storage
+import utils.compat as compat
 
 # 获取UI目录路径
 UI_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui')
@@ -117,6 +119,8 @@ class MainScreen(Screen):
             logger.info("悬浮窗已停止")
         else:
             if check_overlay_permission():
+                # 启动前加载记忆状态
+                self._load_memory_state()
                 self.overlay_manager.start()
                 logger.info("悬浮窗已启动")
             else:
@@ -124,6 +128,39 @@ class MainScreen(Screen):
                 return
 
         self.update_status()
+
+    def _load_memory_state(self):
+        """从存储中加载上次的状态"""
+        try:
+            state = storage.load_all()
+            if state['pos_x'] != 0 or state['pos_y'] != 0:
+                self.overlay_manager._pos_x = state['pos_x']
+                self.overlay_manager._pos_y = state['pos_y']
+            if state['width'] != OVERLAY_DEFAULT_WIDTH:
+                self.overlay_manager._width = state['width']
+            if state['height'] != OVERLAY_DEFAULT_HEIGHT:
+                self.overlay_manager._height = state['height']
+            self.overlay_manager._color_index = state['color_index']
+            self.overlay_manager._opacity = state['opacity']
+            logger.info("已加载记忆状态")
+        except Exception as e:
+            logger.error(f"加载记忆状态失败: {e}")
+
+    def _save_memory_state(self):
+        """保存当前状态到存储"""
+        if self.overlay_manager:
+            try:
+                pos = self.overlay_manager.get_position()
+                size = self.overlay_manager.get_size()
+                storage.save_all(
+                    pos[0], pos[1],
+                    size[0], size[1],
+                    self.overlay_manager.get_color_index(),
+                    self.overlay_manager._opacity
+                )
+                logger.info("已保存当前状态")
+            except Exception as e:
+                logger.error(f"保存状态失败: {e}")
 
     def check_permission(self):
         """检测权限"""
@@ -156,6 +193,18 @@ class PermissionScreen(Screen):
         """进入页面时检测权限状态"""
         if check_overlay_permission():
             self.manager.current = PAGE_MAIN
+        else:
+            # 显示厂商特定的权限引导文案
+            self._update_manufacturer_guide()
+
+    def _update_manufacturer_guide(self):
+        """根据厂商更新权限引导文案"""
+        try:
+            guide_text = compat.get_permission_guide_text()
+            if hasattr(self.ids, 'guide_text'):
+                self.ids.guide_text.text = guide_text
+        except Exception as e:
+            logger.error(f"获取厂商引导文案失败: {e}")
 
 
 class SettingsScreen(Screen):
@@ -204,6 +253,22 @@ class FloatMaskApp(App):
         # 重新检测权限状态
         if check_overlay_permission():
             logger.info("权限已授予")
+
+    def on_stop(self):
+        """应用退出时清理资源"""
+        logger.info("应用退出，清理资源")
+
+        # 获取主页并清理悬浮窗
+        try:
+            main_screen = self.screen_manager.get_screen(PAGE_MAIN)
+            if main_screen.overlay_manager:
+                # 保存状态
+                main_screen._save_memory_state()
+                # 停止悬浮窗
+                main_screen.overlay_manager.stop()
+                logger.info("悬浮窗已清理")
+        except Exception as e:
+            logger.error(f"清理资源失败: {e}")
 
 
 if __name__ == '__main__':
