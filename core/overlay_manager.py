@@ -139,7 +139,7 @@ class OverlayManager:
             Context = autoclass('android.content.Context')
             WindowManager = autoclass('android.view.WindowManager')
             LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
-            PixelFormat = autoclass('android.view.PixelFormat')
+            PixelFormat = autoclass('android.graphics.PixelFormat')
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             View = autoclass('android.view.View')
             Color = autoclass('android.graphics.Color')
