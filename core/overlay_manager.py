@@ -152,10 +152,10 @@ class OverlayManager:
                 Context.WINDOW_SERVICE
             )
 
-            # 创建悬浮窗布局参数
+            # 创建悬浮窗布局参数（使用固定尺寸而非WRAP_CONTENT）
             self._layout_params = LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT,
+                self._width,
+                self._height,
                 LayoutParams.TYPE_APPLICATION_OVERLAY,
                 LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 PixelFormat.TRANSLUCENT
@@ -168,11 +168,6 @@ class OverlayManager:
 
             # 创建Android View作为悬浮窗
             self._overlay_view = View(self._context)
-
-            # 设置View尺寸
-            self._overlay_view.setLayoutParams(
-                LayoutParams(self._width, self._height)
-            )
 
             # 设置背景颜色（半透明灰色）
             self._apply_view_color()
