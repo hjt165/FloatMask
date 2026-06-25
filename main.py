@@ -17,6 +17,16 @@ import os
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 注册中文字体
+from kivy.core.text import LabelBase
+FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'fonts')
+CHINESE_FONT = os.path.join(FONT_DIR, 'msyh.ttc')
+if os.path.exists(CHINESE_FONT):
+    LabelBase.register(name='Chinese', fn_regular=CHINESE_FONT)
+    logger.info(f"已注册中文字体: {CHINESE_FONT}")
+else:
+    logger.warning(f"中文字体不存在: {CHINESE_FONT}")
+
 # 导入常量
 from utils.constants import (
     APP_NAME, APP_VERSION,
