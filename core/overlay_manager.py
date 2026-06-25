@@ -140,6 +140,7 @@ class OverlayManager:
             WindowManager = autoclass('android.view.WindowManager')
             LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
             PixelFormat = autoclass('android.graphics.PixelFormat')
+            Gravity = autoclass('android.view.Gravity')
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             View = autoclass('android.view.View')
             Color = autoclass('android.graphics.Color')
@@ -163,7 +164,7 @@ class OverlayManager:
             # 设置初始位置
             self._layout_params.x = self._pos_x
             self._layout_params.y = self._pos_y
-            self._layout_params.gravity = LayoutParams.TOP | LayoutParams.LEFT
+            self._layout_params.gravity = Gravity.TOP | Gravity.LEFT
 
             # 创建Android View作为悬浮窗
             self._overlay_view = View(self._context)

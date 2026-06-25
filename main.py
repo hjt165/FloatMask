@@ -131,8 +131,11 @@ class MainScreen(Screen):
             if check_overlay_permission():
                 # 启动前加载记忆状态
                 self._load_memory_state()
-                self.overlay_manager.start()
-                logger.info("悬浮窗已启动")
+                success = self.overlay_manager.start()
+                if success:
+                    logger.info("悬浮窗已启动")
+                else:
+                    logger.error("悬浮窗启动失败")
             else:
                 self.manager.current = PAGE_PERMISSION
                 return
