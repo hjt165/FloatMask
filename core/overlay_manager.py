@@ -169,7 +169,10 @@ class OverlayManager:
 
             # 创建Android View作为悬浮窗
             self._overlay_view = View(self._context)
-            self._overlay_view.setVisibility(View.VISIBLE)
+
+            # 在View上也设置尺寸
+            view_params = LayoutParams(int(self._width), int(self._height))
+            self._overlay_view.setLayoutParams(view_params)
 
             # 直接设置背景颜色（避免ColorDrawable被GC）
             self._apply_view_color()
@@ -179,6 +182,7 @@ class OverlayManager:
 
             # 强制刷新布局
             self._overlay_view.requestLayout()
+            self._overlay_view.invalidate()
 
             logger.info(f"悬浮窗视图创建成功: 位置({self._pos_x},{self._pos_y}), "
                          f"大小({self._width}x{self._height})")
