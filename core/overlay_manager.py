@@ -133,7 +133,7 @@ class OverlayManager:
             return
 
         try:
-            from jnius import autoclass
+            from jnius import autoclass, java_method
 
             # 获取Android核心类
             Context = autoclass('android.content.Context')
@@ -144,36 +144,41 @@ class OverlayManager:
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             View = autoclass('android.view.View')
             Color = autoclass('android.graphics.Color')
-            Drawable = autoclass('android.graphics.drawable.ColorDrawable')
 
             # 获取系统上下文和服务
             self._context = PythonActivity.mActivity
             self._window_manager = self._context.getSystemService(
                 Context.WINDOW_SERVICE
             )
+            # 防止GC回收
+            self._window_manager = self._window_manager
 
-            # 创建悬浮窗布局参数（使用固定尺寸而非WRAP_CONTENT）
+            # 创建悬浮窗布局参数（使用固定尺寸）
             self._layout_params = LayoutParams(
-                self._width,
-                self._height,
+                int(self._width),
+                int(self._height),
                 LayoutParams.TYPE_APPLICATION_OVERLAY,
                 LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 PixelFormat.TRANSLUCENT
             )
 
             # 设置初始位置
-            self._layout_params.x = self._pos_x
-            self._layout_params.y = self._pos_y
+            self._layout_params.x = int(self._pos_x)
+            self._layout_params.y = int(self._pos_y)
             self._layout_params.gravity = Gravity.TOP | Gravity.LEFT
 
             # 创建Android View作为悬浮窗
             self._overlay_view = View(self._context)
+            self._overlay_view.setVisibility(View.VISIBLE)
 
-            # 设置背景颜色（半透明灰色）
+            # 直接设置背景颜色（避免ColorDrawable被GC）
             self._apply_view_color()
 
             # 添加悬浮窗到窗口
             self._window_manager.addView(self._overlay_view, self._layout_params)
+
+            # 强制刷新布局
+            self._overlay_view.requestLayout()
 
             logger.info(f"悬浮窗视图创建成功: 位置({self._pos_x},{self._pos_y}), "
                          f"大小({self._width}x{self._height})")
@@ -192,7 +197,6 @@ class OverlayManager:
         try:
             from jnius import autoclass
             Color = autoclass('android.graphics.Color')
-            ColorDrawable = autoclass('android.graphics.drawable.ColorDrawable')
 
             # 获取当前颜色RGBA (0-1范围)
             r, g, b, a = COLOR_PRESETS[self._color_index]['rgba']
@@ -205,9 +209,8 @@ class OverlayManager:
                 int(b * 255)
             )
 
-            # 创建颜色背景
-            drawable = ColorDrawable(color_int)
-            self._overlay_view.setBackground(drawable)
+            # 直接设置背景颜色（比ColorDrawable更可靠）
+            self._overlay_view.setBackgroundColor(color_int)
 
             logger.debug(f"应用颜色: {COLOR_PRESETS[self._color_index]['name']}")
         except Exception as e:
