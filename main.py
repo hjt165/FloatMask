@@ -123,6 +123,8 @@ class MainScreen(Screen):
             self.overlay_manager = OverlayManager()
             self.overlay_manager.initialize(Window.width, Window.height)
             self.touch_handler = TouchHandler(self.overlay_manager)
+            # 注册触摸处理器到悬浮窗管理器（TouchBridge回调用）
+            self.overlay_manager.set_touch_handler(self.touch_handler)
 
         if self.overlay_manager.is_active():
             self.overlay_manager.stop()

@@ -3,9 +3,15 @@
 职责：管理悬浮窗的创建、显示、隐藏、移除和状态更新
 作用：核心模块，负责悬浮窗的完整生命周期管理
 通过PyJNIus调用Android WindowManager API实现真正的系统级悬浮窗
+
+触摸桥接原理：
+  系统级悬浮窗（TYPE_APPLICATION_OVERLAY）的触摸事件由Android系统直接分发，
+  不经过Kivy事件循环。因此需要在Java层的View上设置OnTouchListener，
+  通过PythonJavaClass回调将ACTION_DOWN/MOVE/UP事件转发给Python TouchHandler。
 """
 
 import logging
+import time
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,6 +27,10 @@ logger = logging.getLogger(__name__)
 
 # 全局引用列表，防止PyJNIus回收Java对象
 _java_refs = []
+
+# 全局触摸处理器引用（供TouchBridge回调使用）
+_global_touch_handler = None
+_global_overlay_manager = None
 
 
 class OverlayManager:
@@ -53,6 +63,9 @@ class OverlayManager:
         self._overlay_view = None
         self._layout_params = None
         self._context = None
+
+        # 触摸桥接
+        self._touch_listener = None
 
         # 是否为Android环境
         self._is_android = False
@@ -88,6 +101,18 @@ class OverlayManager:
     def is_active(self):
         """检查悬浮窗是否已激活"""
         return self._is_active
+
+    def set_touch_handler(self, touch_handler):
+        """
+        设置触摸处理器引用，供TouchBridge回调使用
+
+        参数:
+            touch_handler: TouchHandler实例
+        """
+        global _global_touch_handler, _global_overlay_manager
+        _global_touch_handler = touch_handler
+        _global_overlay_manager = self
+        logger.info("触摸处理器已注册到悬浮窗管理器")
 
     def start(self):
         """
@@ -169,6 +194,46 @@ class OverlayManager:
             r, g, b, a = COLOR_PRESETS[self._color_index]['rgba']
             color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
             self._overlay_view.setBackgroundColor(color_int)
+
+            # === 触摸桥接：在Java层View上设置OnTouchListener ===
+            # View接收触摸事件 → TouchBridge.onTouch → 转发到Python TouchHandler
+            View = autoclass('android.view.View')
+
+            class TouchBridge(PythonJavaClass):
+                """
+                Java层触摸监听器（实现View.OnTouchListener接口）
+                将Android触摸事件桥接到Python TouchHandler
+                """
+                __javainterfaces__ = ['android/view/View$OnTouchListener']
+
+                @java_method('(Landroid/view/View;Landroid/view/MotionEvent;)Z')
+                def onTouch(self, view, event):
+                    try:
+                        action = event.getAction()
+                        x = int(event.getX())
+                        y = int(event.getY())
+
+                        # 触摸事件类型映射
+                        ACTION_DOWN = 0  # MotionEvent.ACTION_DOWN
+                        ACTION_MOVE = 2  # MotionEvent.ACTION_MOVE
+                        ACTION_UP = 1    # MotionEvent.ACTION_UP
+
+                        if action == ACTION_DOWN:
+                            _global_touch_handler.on_touch_down(x, y)
+                        elif action == ACTION_MOVE:
+                            _global_touch_handler.on_touch_move(x, y)
+                        elif action == ACTION_UP:
+                            _global_touch_handler.on_touch_up(x, y)
+
+                        return True  # 消费事件，阻止后续处理
+                    except Exception as e:
+                        logger.error(f"TouchBridge回调失败: {e}")
+                        return False
+
+            # 创建并保存TouchBridge实例
+            self._touch_listener = TouchBridge()
+            self._overlay_view.setOnTouchListener(self._touch_listener)
+            _java_refs.append(self._touch_listener)
 
             # 保存全局引用
             _java_refs.append(self._context)
