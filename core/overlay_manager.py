@@ -209,7 +209,7 @@ class OverlayManager:
                 @java_method('(Landroid/view/View;Landroid/view/MotionEvent;)Z')
                 def onTouch(self, view, event):
                     try:
-                        action = event.getAction()
+                        action = int(event.getAction())
                         x = int(event.getX())
                         y = int(event.getY())
 
@@ -219,10 +219,12 @@ class OverlayManager:
                         ACTION_UP = 1    # MotionEvent.ACTION_UP
 
                         if action == ACTION_DOWN:
+                            logger.info(f"TouchBridge DOWN: ({x}, {y})")
                             _global_touch_handler.on_touch_down(x, y)
                         elif action == ACTION_MOVE:
                             _global_touch_handler.on_touch_move(x, y)
                         elif action == ACTION_UP:
+                            logger.info(f"TouchBridge UP: ({x}, {y})")
                             _global_touch_handler.on_touch_up(x, y)
 
                         return True  # 消费事件，阻止后续处理

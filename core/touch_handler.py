@@ -96,7 +96,7 @@ class TouchHandler:
             self._touch_count = 1
         
         self._last_touch_time = current_time
-        logger.debug(f"触摸按下: ({x}, {y})")
+        logger.info(f"触摸按下: ({x}, {y})")
     
     def on_touch_move(self, x, y):
         """
@@ -132,8 +132,8 @@ class TouchHandler:
             
             # 更新触摸起始位置
             self._touch_start_pos = (x, y)
-            
-            logger.debug(f"拖动: ({dx}, {dy})")
+
+            logger.info(f"拖动: ({dx}, {dy}), 新位置: ({new_x}, {new_y})")
     
     def on_touch_up(self, x, y):
         """
@@ -158,7 +158,7 @@ class TouchHandler:
                 logger.debug("检测到长按")
                 self._handle_long_press()
         
-        logger.debug(f"触摸抬起: ({x}, {y})")
+        logger.info(f"触摸抬起: ({x}, {y})")
     
     def _handle_double_click(self):
         """处理双击事件"""
