@@ -125,14 +125,15 @@ class OverlayManager:
         """
         创建悬浮窗视图（Android环境）
 
-        使用FrameLayout作为悬浮窗容器，设置最小尺寸和背景色
+        使用FrameLayout作为悬浮窗容器，通过runOnUiThread确保在主线程执行
         """
         if not self._is_android:
             logger.warning("非Android环境，跳过悬浮窗创建")
             return
 
         try:
-            from jnius import autoclass
+            from jnius import autoclass, PythonJavaClass, java_method
+            from threading import Event
 
             # 获取Android核心类
             Context = autoclass('android.content.Context')
@@ -159,7 +160,7 @@ class OverlayManager:
             self._layout_params.y = int(self._pos_y)
             self._layout_params.gravity = Gravity.TOP | Gravity.LEFT
 
-            # 使用FrameLayout作为悬浮窗（比View更可靠）
+            # 使用FrameLayout作为悬浮窗
             self._overlay_view = FrameLayout(self._context)
             self._overlay_view.setMinimumWidth(int(self._width))
             self._overlay_view.setMinimumHeight(int(self._height))
@@ -169,16 +170,40 @@ class OverlayManager:
             color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
             self._overlay_view.setBackgroundColor(color_int)
 
-            # 添加悬浮窗到窗口
-            self._window_manager.addView(self._overlay_view, self._layout_params)
-
-            # 保存所有Java引用防止GC回收
+            # 保存全局引用
             _java_refs.append(self._context)
             _java_refs.append(self._window_manager)
             _java_refs.append(self._layout_params)
             _java_refs.append(self._overlay_view)
+            _java_refs.append(self._overlay_view.getBackground())
 
-            logger.info(f"悬浮窗视图创建成功: 位置({self._pos_x},{self._pos_y}), "
+            # 在主线程添加到窗口
+            done = Event()
+
+            class AddOverlay(PythonJavaClass):
+                __javainterfaces__ = ['java/lang/Runnable']
+
+                def __init__(self2, wm, view, params):
+                    self2.wm = wm
+                    self2.v = view
+                    self2.p = params
+
+                @java_method('()V')
+                def run(self2):
+                    try:
+                        self2.wm.addView(self2.v, self2.p)
+                        logger.info("addView 在主线程执行成功")
+                    except Exception as e:
+                        logger.error(f"addView 在主线程失败: {e}")
+                    done.set()
+
+            runnable = AddOverlay(self._window_manager, self._overlay_view, self._layout_params)
+            self._context.runOnUiThread(runnable)
+
+            # 等待主线程执行完成（最多3秒）
+            done.wait(timeout=3)
+
+            logger.info(f"悬浮窗视图创建完成: 位置({self._pos_x},{self._pos_y}), "
                          f"大小({self._width}x{self._height})")
 
         except ImportError:
