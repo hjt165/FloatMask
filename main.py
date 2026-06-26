@@ -128,6 +128,7 @@ class MainScreen(Screen):
 
         if self.overlay_manager.is_active():
             self.overlay_manager.stop()
+            self._stop_foreground_service()
             logger.info("悬浮窗已停止")
         else:
             if check_overlay_permission():
@@ -135,6 +136,7 @@ class MainScreen(Screen):
                 self._load_memory_state()
                 success = self.overlay_manager.start()
                 if success:
+                    self._start_foreground_service()
                     logger.info("悬浮窗已启动")
                 else:
                     logger.error("悬浮窗启动失败")
@@ -176,6 +178,34 @@ class MainScreen(Screen):
                 logger.info("已保存当前状态")
             except Exception as e:
                 logger.error(f"保存状态失败: {e}")
+
+    def _start_foreground_service(self):
+        """启动前台服务保活"""
+        try:
+            from jnius import autoclass
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            Intent = autoclass('android.content.Intent')
+            PythonService = autoclass('org.kivy.android.PythonService')
+            context = PythonActivity.mActivity
+            intent = Intent(context, PythonService)
+            context.startService(intent)
+            logger.info("前台服务已启动")
+        except Exception as e:
+            logger.error(f"启动前台服务失败: {e}")
+
+    def _stop_foreground_service(self):
+        """停止前台服务"""
+        try:
+            from jnius import autoclass
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            Intent = autoclass('android.content.Intent')
+            PythonService = autoclass('org.kivy.android.PythonService')
+            context = PythonActivity.mActivity
+            intent = Intent(context, PythonService)
+            context.stopService(intent)
+            logger.info("前台服务已停止")
+        except Exception as e:
+            logger.error(f"停止前台服务失败: {e}")
 
     def check_permission(self):
         """检测权限"""
@@ -281,6 +311,8 @@ class FloatMaskApp(App):
                 main_screen._save_memory_state()
                 # 停止悬浮窗
                 main_screen.overlay_manager.stop()
+                # 停止前台服务
+                main_screen._stop_foreground_service()
                 logger.info("悬浮窗已清理")
         except Exception as e:
             logger.error(f"清理资源失败: {e}")

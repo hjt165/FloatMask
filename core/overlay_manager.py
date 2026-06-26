@@ -67,6 +67,9 @@ class OverlayManager:
         # 触摸桥接
         self._touch_listener = None
 
+        # 快捷菜单
+        self._menu_view = None
+
         # 是否为Android环境
         self._is_android = False
 
@@ -195,6 +198,25 @@ class OverlayManager:
             color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
             self._overlay_view.setBackgroundColor(color_int)
 
+            # 添加边框 View（透明背景 + 黑色描边）
+            View = autoclass('android.view.View')
+            GradientDrawable = autoclass('android.graphics.drawable.GradientDrawable')
+
+            self._border_view = View(self._context)
+            border_drawable = GradientDrawable()
+            border_drawable.setColor(0x00000000)  # 内部透明
+            border_drawable.setStroke(4, 0xFF000000)  # 4px 黑色边框
+            border_drawable.setCornerRadius(0)
+            self._border_view.setBackground(border_drawable)
+
+            border_params = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            self._border_view.setLayoutParams(border_params)
+            self._overlay_view.addView(self._border_view)
+            _java_refs.append(self._border_view)
+
             # === 触摸桥接：在Java层View上设置OnTouchListener ===
             # View接收触摸事件 → TouchBridge.onTouch → 转发到Python TouchHandler
             View = autoclass('android.view.View')
@@ -236,6 +258,31 @@ class OverlayManager:
             self._touch_listener = TouchBridge()
             self._overlay_view.setOnTouchListener(self._touch_listener)
             _java_refs.append(self._touch_listener)
+
+            # === 最小化按钮（右上角小圆点） ===
+            self._minimize_btn = View(self._context)
+            btn_bg = GradientDrawable()
+            btn_bg.setShape(GradientDrawable.OVAL)
+            btn_bg.setColor(0x80000000)  # 半透明黑色圆形
+            self._minimize_btn.setBackground(btn_bg)
+
+            btn_params = FrameLayout.LayoutParams(40, 40)
+            btn_params.gravity = Gravity.TOP | Gravity.RIGHT
+            self._minimize_btn.setLayoutParams(btn_params)
+
+            overlay_mgr_ref = self
+
+            class MinimizeClickListener(PythonJavaClass):
+                __javainterfaces__ = ['android/view/View$OnClickListener']
+
+                @java_method('()V')
+                def onClick(self):
+                    overlay_mgr_ref.toggle_minimize()
+
+            self._minimize_btn.setOnClickListener(MinimizeClickListener())
+            _java_refs.append(self._minimize_btn)
+
+            self._overlay_view.addView(self._minimize_btn)
 
             # 保存全局引用
             _java_refs.append(self._context)
@@ -306,6 +353,7 @@ class OverlayManager:
             if self._window_manager and self._overlay_view:
                 self._window_manager.removeView(self._overlay_view)
                 self._overlay_view = None
+                self._border_view = None
                 logger.info("悬浮窗视图已移除")
         except Exception as e:
             logger.error(f"移除悬浮窗视图失败: {e}")
@@ -400,10 +448,18 @@ class OverlayManager:
         if self._is_minimized:
             # 最小化：缩小View
             self.update_size(30, 30)
+            if hasattr(self, '_border_view') and self._border_view:
+                self._border_view.setVisibility(8)  # View.GONE
+            if hasattr(self, '_minimize_btn') and self._minimize_btn:
+                self._minimize_btn.setVisibility(8)  # View.GONE
             logger.info("最小化模式: 开启")
         else:
             # 恢复：还原View
             self.update_size(OVERLAY_DEFAULT_WIDTH, OVERLAY_DEFAULT_HEIGHT)
+            if hasattr(self, '_border_view') and self._border_view:
+                self._border_view.setVisibility(0)  # View.VISIBLE
+            if hasattr(self, '_minimize_btn') and self._minimize_btn:
+                self._minimize_btn.setVisibility(0)  # View.VISIBLE
             logger.info("最小化模式: 关闭")
 
     def get_position(self):
@@ -421,3 +477,107 @@ class OverlayManager:
     def get_color_index(self):
         """获取当前颜色索引"""
         return self._color_index
+
+    def show_quick_menu(self):
+        """显示快捷菜单（第二个OverlayView）"""
+        if self._menu_view is not None:
+            self.hide_quick_menu()
+            return
+
+        if not self._is_android or not self._window_manager:
+            return
+
+        try:
+            from jnius import autoclass, PythonJavaClass, java_method
+            from threading import Event
+
+            FrameLayout = autoclass('android.widget.FrameLayout')
+            LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
+            PixelFormat = autoclass('android.graphics.PixelFormat')
+            Gravity = autoclass('android.view.Gravity')
+            View = autoclass('android.view.View')
+            GradientDrawable = autoclass('android.graphics.drawable.GradientDrawable')
+
+            # 创建菜单容器（3个区域：透明度↓ / 最小化 / 关闭）
+            menu_width = 180
+            menu_height = 120
+            self._menu_view = FrameLayout(self._context)
+
+            bg = GradientDrawable()
+            bg.setColor(0xFFFFFFFF)
+            bg.setCornerRadius(20)
+            self._menu_view.setBackground(bg)
+
+            # 菜单参数：悬浮窗右侧弹出
+            menu_params = LayoutParams(
+                menu_width, menu_height,
+                LayoutParams.TYPE_APPLICATION_OVERLAY,
+                LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT
+            )
+            menu_params.gravity = Gravity.TOP | Gravity.LEFT
+            menu_params.x = self._pos_x + self._width + 10
+            menu_params.y = self._pos_y
+
+            # 通过 OnTouchListener 判断触摸区域
+            overlay_mgr = self
+
+            class MenuTouchListener(PythonJavaClass):
+                __javainterfaces__ = ['android/view/View$OnTouchListener']
+
+                @java_method('(Landroid/view/View;Landroid/view/MotionEvent;)Z')
+                def onTouch(self, view, event):
+                    action = int(event.getAction())
+                    if action == 0:  # ACTION_DOWN
+                        y = int(event.getY())
+                        if y < 40:
+                            overlay_mgr.switch_color()
+                        elif y < 80:
+                            overlay_mgr.toggle_minimize()
+                        else:
+                            overlay_mgr.hide_quick_menu()
+                    return True
+
+            listener = MenuTouchListener()
+            self._menu_view.setOnTouchListener(listener)
+            _java_refs.append(listener)
+            _java_refs.append(self._menu_view)
+
+            # 在主线程添加
+            done = Event()
+
+            class AddMenu(PythonJavaClass):
+                __javainterfaces__ = ['java/lang/Runnable']
+
+                def __init__(self2, wm, view, params):
+                    self2.wm = wm
+                    self2.v = view
+                    self2.p = params
+
+                @java_method('()V')
+                def run(self2):
+                    try:
+                        self2.wm.addView(self2.v, self2.p)
+                    except Exception as e:
+                        logger.error(f"菜单添加失败: {e}")
+                    done.set()
+
+            self._context.runOnUiThread(
+                AddMenu(self._window_manager, self._menu_view, menu_params)
+            )
+            done.wait(timeout=3)
+            logger.info("快捷菜单已显示")
+
+        except Exception as e:
+            logger.error(f"显示快捷菜单失败: {e}")
+
+    def hide_quick_menu(self):
+        """隐藏快捷菜单"""
+        if self._menu_view is None:
+            return
+        try:
+            self._window_manager.removeView(self._menu_view)
+            self._menu_view = None
+            logger.info("快捷菜单已隐藏")
+        except Exception as e:
+            logger.error(f"隐藏快捷菜单失败: {e}")

@@ -39,6 +39,12 @@ class TouchHandler:
         self._touch_start_pos = (0, 0)
         self._last_touch_time = 0
         self._touch_count = 0
+
+        # 缩放状态
+        self._resize_mode = False
+        self._resize_edge = None
+        self._resize_start_size = (0, 0)
+        self._resize_start_pos = (0, 0)
         
         # 配置参数
         self._long_press_duration = 0.5  # 长按时间（秒）
@@ -96,11 +102,26 @@ class TouchHandler:
             self._touch_count = 1
         
         self._last_touch_time = current_time
+
+        # 检测是否在边缘（缩放模式）
+        if self._overlay_manager.is_active() and not self._overlay_manager._is_minimized:
+            pos = self._overlay_manager.get_position()
+            size = self._overlay_manager.get_size()
+            edge = self.get_resize_edge(x, y, pos[0], pos[1], size[0], size[1])
+            if edge is not None:
+                self._resize_mode = True
+                self._resize_edge = edge
+                self._resize_start_size = size
+                self._resize_start_pos = (x, y)
+                logger.info(f"进入缩放模式: 边缘={edge}")
+            else:
+                self._resize_mode = False
+
         logger.info(f"触摸按下: ({x}, {y})")
     
     def on_touch_move(self, x, y):
         """
-        触摸移动事件处理（拖动）
+        触摸移动事件处理（拖动或缩放）
         
         参数:
             x (int): 当前触摸点X坐标
@@ -109,11 +130,32 @@ class TouchHandler:
         if not self._overlay_manager.is_active():
             return
         
-        # 如果是最小化模式，不允许拖动
+        # 如果是最小化模式，不允许操作
         if self._overlay_manager._is_minimized:
             return
         
-        # 计算移动距离
+        # 缩放模式：根据边缘方向调整尺寸
+        if self._resize_mode:
+            dx = x - self._resize_start_pos[0]
+            dy = y - self._resize_start_pos[1]
+            orig_w, orig_h = self._resize_start_size
+
+            new_w, new_h = orig_w, orig_h
+            if 'right' in self._resize_edge:
+                new_w = orig_w + dx
+            if 'left' in self._resize_edge:
+                new_w = orig_w - dx
+            if 'bottom' in self._resize_edge:
+                new_h = orig_h + dy
+            if 'top' in self._resize_edge:
+                new_h = orig_h - dy
+
+            new_w = max(80, int(new_w))
+            new_h = max(80, int(new_h))
+            self._overlay_manager.update_size(new_w, new_h)
+            return
+        
+        # 拖动模式
         start_x, start_y = self._touch_start_pos
         dx = x - start_x
         dy = y - start_y
@@ -143,6 +185,13 @@ class TouchHandler:
             x (int): 触摸点X坐标
             y (int): 触摸点Y坐标
         """
+        # 重置缩放状态
+        if self._resize_mode:
+            self._resize_mode = False
+            self._resize_edge = None
+            logger.info("缩放结束")
+            return
+
         current_time = time.time()
         press_duration = current_time - self._touch_start_time
         
@@ -174,8 +223,8 @@ class TouchHandler:
         if self._on_long_press:
             self._on_long_press()
         else:
-            # 默认行为：打印日志（实际应用中应弹出菜单）
-            logger.info("长按触发（菜单功能待实现）")
+            # 默认行为：弹出快捷菜单
+            self._overlay_manager.show_quick_menu()
     
     def is_point_inside(self, touch_x, touch_y, overlay_x, overlay_y, 
                         overlay_width, overlay_height):
