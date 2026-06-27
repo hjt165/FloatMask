@@ -120,6 +120,7 @@ class MainScreen(Screen):
 
     def toggle_overlay(self):
         """切换悬浮窗状态"""
+        logger.info(f"toggle_overlay called, overlay_manager={self.overlay_manager}, active={self.overlay_manager.is_active() if self.overlay_manager else None}")
         if self.overlay_manager is None:
             # 初始化悬浮窗管理器
             self.overlay_manager = OverlayManager()
@@ -129,6 +130,7 @@ class MainScreen(Screen):
             self.overlay_manager.set_touch_handler(self.touch_handler)
 
         if self.overlay_manager.is_active():
+            logger.info("Stopping overlay")
             self.overlay_manager.stop()
             self._stop_foreground_service()
             logger.info("悬浮窗已停止")
@@ -136,6 +138,7 @@ class MainScreen(Screen):
             if check_overlay_permission():
                 # 启动前加载记忆状态
                 self._load_memory_state()
+                logger.info("Starting overlay")
                 success = self.overlay_manager.start()
                 if success:
                     self._start_foreground_service()
