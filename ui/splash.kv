@@ -1,10 +1,9 @@
 # 启动页KV样式
-# 定义启动页的布局和外观
 
 <SplashScreen>:
     canvas.before:
         Color:
-            rgba: 0.13, 0.59, 0.95, 1
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
@@ -12,65 +11,42 @@
     BoxLayout:
         orientation: 'vertical'
         padding: dp(40)
-        spacing: dp(16)
+        spacing: 0
 
-        # 弹性空间
         Widget:
-            size_hint_y: 0.25
+            size_hint_y: 0.35
 
-        # 应用图标区域
-        BoxLayout:
-            size_hint_y: 0.25
-            orientation: 'vertical'
+        Label:
+            text: 'FM'
+            font_size: dp(36)
+            color: 0.13, 0.55, 0.95, 1
+            bold: True
+            size_hint_y: 0.1
 
-            # FM 图标
-            canvas:
-                Color:
-                    rgba: 1, 1, 1, 0.2
-                Ellipse:
-                    pos: self.center_x - dp(45), self.center_y - dp(45)
-                    size: dp(90), dp(90)
-                Color:
-                    rgba: 1, 1, 1, 1
+        Widget:
+            size_hint_y: 0.02
 
-            Label:
-                text: 'FM'
-                font_size: dp(36)
-                color: 1, 1, 1, 1
-                bold: True
-
-        # 应用名称
         Label:
             text: 'FloatMask'
-            font_size: dp(30)
-            color: 1, 1, 1, 1
-            bold: True
-            size_hint_y: 0.12
-
-        # 副标题
-        Label:
-            text: '智能字幕遮挡工具'
-            font_name: 'Chinese'
-            font_size: dp(16)
-            color: 1, 1, 1, 0.8
+            font_size: dp(24)
+            color: 0.15, 0.15, 0.15, 1
             size_hint_y: 0.08
 
-        # 状态提示
-        Label:
-            id: status_label
-            text: '正在检测权限...'
-            font_name: 'Chinese'
-            font_size: dp(13)
-            color: 1, 1, 1, 0.6
-            size_hint_y: 0.08
-
-        # 弹性空间
         Widget:
-            size_hint_y: 0.3
+            size_hint_y: 0.01
 
-        # 版本号
+        Label:
+            text: '字幕遮挡工具'
+            font_name: 'Chinese'
+            font_size: dp(14)
+            color: 0.6, 0.6, 0.6, 1
+            size_hint_y: 0.06
+
+        Widget:
+            size_hint_y: 0.35
+
         Label:
             text: 'v0.1.0'
             font_size: dp(12)
-            color: 1, 1, 1, 0.5
-            size_hint_y: 0.05
+            color: 0.75, 0.75, 0.75, 1
+            size_hint_y: 0.04

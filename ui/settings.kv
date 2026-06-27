@@ -1,38 +1,29 @@
 # 设置页KV样式
-# 定义设置页的布局和外观
 
 <SettingsScreen>:
     canvas.before:
         Color:
-            rgba: 0.96, 0.96, 0.96, 1
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
 
     BoxLayout:
         orientation: 'vertical'
-        padding: 0
+        padding: dp(24)
         spacing: 0
 
-        # 顶部蓝色标题栏
+        # 顶部
         BoxLayout:
-            size_hint_y: 0.1
-            padding: [dp(12), dp(10)]
-
-            canvas:
-                Color:
-                    rgba: 0.13, 0.59, 0.95, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+            size_hint_y: 0.08
 
             Button:
                 text: '< 返回'
                 font_name: 'Chinese'
                 font_size: dp(15)
-                size_hint_x: 0.3
+                size_hint_x: 0.4
                 background_color: 0, 0, 0, 0
-                color: 1, 1, 1, 0.9
+                color: 0.13, 0.55, 0.95, 1
                 halign: 'left'
                 text_size: self.size
                 valign: 'middle'
@@ -41,217 +32,197 @@
             Label:
                 text: '设置'
                 font_name: 'Chinese'
-                font_size: dp(20)
-                color: 1, 1, 1, 1
-                bold: True
+                font_size: dp(18)
+                color: 0.15, 0.15, 0.15, 1
 
             Widget:
-                size_hint_x: 0.3
+                size_hint_x: 0.4
 
-        # 内容区域
+        Widget:
+            size_hint_y: 0.03
+
+        # 分隔线
+        Widget:
+            size_hint_y: 0.002
+            canvas:
+                Color:
+                    rgba: 0.92, 0.92, 0.92, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        # 外观
         BoxLayout:
             orientation: 'vertical'
-            padding: dp(16)
-            spacing: dp(12)
+            size_hint_y: 0.35
+            padding: [dp(4), dp(12)]
+            spacing: dp(10)
 
-            # 外观设置卡片
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint_y: 0.35
-                padding: dp(16)
-                spacing: dp(8)
-
-                canvas:
-                    Color:
-                        rgba: 1, 1, 1, 1
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(12)]
-
-                Label:
-                    text: '外观设置'
-                    font_name: 'Chinese'
-                    font_size: dp(16)
-                    color: 0.2, 0.2, 0.2, 1
-                    bold: True
-                    halign: 'left'
-                    text_size: self.size
-                    size_hint_y: 0.2
-
-                BoxLayout:
-                    size_hint_y: 0.25
-                    Label:
-                        text: '默认颜色'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Spinner:
-                        id: color_spinner
-                        text: '灰色'
-                        values: ['灰色', '黑色', '纯黑']
-                        size_hint_x: 0.4
-
-                BoxLayout:
-                    size_hint_y: 0.25
-                    Label:
-                        text: '默认透明度'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Slider:
-                        id: opacity_slider
-                        min: 0
-                        max: 100
-                        value: 50
-                        size_hint_x: 0.5
-
-                BoxLayout:
-                    size_hint_y: 0.25
-                    Label:
-                        text: '边框宽度'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Spinner:
-                        id: border_spinner
-                        text: '2px'
-                        values: ['1px', '2px', '3px', '4px']
-                        size_hint_x: 0.4
-
-            # 行为设置卡片
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint_y: 0.35
-                padding: dp(16)
-                spacing: dp(8)
-
-                canvas:
-                    Color:
-                        rgba: 1, 1, 1, 1
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(12)]
-
-                Label:
-                    text: '行为设置'
-                    font_name: 'Chinese'
-                    font_size: dp(16)
-                    color: 0.2, 0.2, 0.2, 1
-                    bold: True
-                    halign: 'left'
-                    text_size: self.size
-                    size_hint_y: 0.2
-
-                BoxLayout:
-                    size_hint_y: 0.25
-                    Label:
-                        text: '记忆位置'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Switch:
-                        id: remember_pos
-                        active: True
-                        size_hint_x: 0.3
-
-                BoxLayout:
-                    size_hint_y: 0.25
-                    Label:
-                        text: '记忆大小'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Switch:
-                        id: remember_size
-                        active: True
-                        size_hint_x: 0.3
-
-                BoxLayout:
-                    size_hint_y: 0.25
-                    Label:
-                        text: '记忆颜色'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Switch:
-                        id: remember_color
-                        active: True
-                        size_hint_x: 0.3
-
-            # 系统信息卡片
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint_y: 0.2
-                padding: dp(16)
-                spacing: dp(5)
-
-                canvas:
-                    Color:
-                        rgba: 1, 1, 1, 1
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(12)]
-
-                Label:
-                    text: '系统信息'
-                    font_name: 'Chinese'
-                    font_size: dp(16)
-                    color: 0.2, 0.2, 0.2, 1
-                    bold: True
-                    halign: 'left'
-                    text_size: self.size
-                    size_hint_y: 0.35
-
-                BoxLayout:
-                    size_hint_y: 0.35
-                    Label:
-                        text: '权限状态'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.4, 0.4, 0.4, 1
-                        halign: 'left'
-                        text_size: self.size
-                    Label:
-                        id: permission_status
-                        text: '检测中...'
-                        font_name: 'Chinese'
-                        font_size: dp(14)
-                        color: 0.6, 0.6, 0.6, 1
-                        halign: 'right'
-                        text_size: self.size
-
-            # 恢复默认按钮
-            Button:
-                text: '恢复默认设置'
+            Label:
+                text: '外观'
                 font_name: 'Chinese'
-                font_size: dp(15)
-                size_hint_y: 0.07
-                background_color: 0, 0, 0, 0
-                color: 0.5, 0.5, 0.5, 1
+                font_size: dp(13)
+                color: 0.6, 0.6, 0.6, 1
+                halign: 'left'
+                text_size: self.size
+                size_hint_y: 0.15
 
-                canvas.before:
-                    Color:
-                        rgba: 0.93, 0.93, 0.93, 1
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(10)]
+            BoxLayout:
+                size_hint_y: 0.2
+                Label:
+                    text: '默认颜色'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Spinner:
+                    id: color_spinner
+                    text: '灰色'
+                    values: ['灰色', '黑色', '纯黑']
+                    size_hint_x: 0.35
 
-            # 底部占位
-            Widget:
-                size_hint_y: 0.03
+            BoxLayout:
+                size_hint_y: 0.2
+                Label:
+                    text: '透明度'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Slider:
+                    id: opacity_slider
+                    min: 0
+                    max: 100
+                    value: 50
+                    size_hint_x: 0.5
+
+            BoxLayout:
+                size_hint_y: 0.2
+                Label:
+                    text: '边框'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Spinner:
+                    id: border_spinner
+                    text: '2px'
+                    values: ['1px', '2px', '3px', '4px']
+                    size_hint_x: 0.35
+
+        # 分隔线
+        Widget:
+            size_hint_y: 0.002
+            canvas:
+                Color:
+                    rgba: 0.92, 0.92, 0.92, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        # 行为
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.3
+            padding: [dp(4), dp(12)]
+            spacing: dp(10)
+
+            Label:
+                text: '行为'
+                font_name: 'Chinese'
+                font_size: dp(13)
+                color: 0.6, 0.6, 0.6, 1
+                halign: 'left'
+                text_size: self.size
+                size_hint_y: 0.15
+
+            BoxLayout:
+                size_hint_y: 0.2
+                Label:
+                    text: '记住位置'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Switch:
+                    id: remember_pos
+                    active: True
+                    size_hint_x: 0.3
+
+            BoxLayout:
+                size_hint_y: 0.2
+                Label:
+                    text: '记住大小'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Switch:
+                    id: remember_size
+                    active: True
+                    size_hint_x: 0.3
+
+            BoxLayout:
+                size_hint_y: 0.2
+                Label:
+                    text: '记住颜色'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Switch:
+                    id: remember_color
+                    active: True
+                    size_hint_x: 0.3
+
+        # 分隔线
+        Widget:
+            size_hint_y: 0.002
+            canvas:
+                Color:
+                    rgba: 0.92, 0.92, 0.92, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        # 系统信息
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.15
+            padding: [dp(4), dp(12)]
+
+            Label:
+                text: '系统'
+                font_name: 'Chinese'
+                font_size: dp(13)
+                color: 0.6, 0.6, 0.6, 1
+                halign: 'left'
+                text_size: self.size
+                size_hint_y: 0.25
+
+            BoxLayout:
+                size_hint_y: 0.35
+                Label:
+                    text: '权限状态'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.2, 0.2, 0.2, 1
+                    halign: 'left'
+                    text_size: self.size
+                Label:
+                    id: permission_status
+                    text: '检测中...'
+                    font_name: 'Chinese'
+                    font_size: dp(15)
+                    color: 0.6, 0.6, 0.6, 1
+                    halign: 'right'
+                    text_size: self.size
+
+        Widget:
+            size_hint_y: 0.08
