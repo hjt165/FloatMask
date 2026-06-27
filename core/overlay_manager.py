@@ -194,7 +194,8 @@ class OverlayManager:
             self._overlay_view.setMinimumHeight(int(self._height))
 
             # 设置背景颜色（FrameLayout 用黑色作为边框底色）
-            self._overlay_view.setBackgroundColor(0xFF000000)
+            # 0xFF000000 在 Java int 范围外，需用有符号整数 -16777216
+            self._overlay_view.setBackgroundColor(-16777216)
 
             # 添加内部 View（半透明背景，留出边框间距）
             View = autoclass('android.view.View')
