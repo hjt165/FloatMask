@@ -193,27 +193,26 @@ class OverlayManager:
             self._overlay_view.setMinimumWidth(int(self._width))
             self._overlay_view.setMinimumHeight(int(self._height))
 
-            # 设置背景颜色
-            r, g, b, a = COLOR_PRESETS[self._color_index]['rgba']
-            color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
-            self._overlay_view.setBackgroundColor(color_int)
+            # 设置背景颜色（FrameLayout 用黑色作为边框底色）
+            self._overlay_view.setBackgroundColor(0xFF000000)
 
-            # 添加边框 View（透明背景 + 黑色描边）
+            # 添加内部 View（半透明背景，留出边框间距）
             View = autoclass('android.view.View')
-            GradientDrawable = autoclass('android.graphics.drawable.GradientDrawable')
 
+            border_margin = 4  # 边框宽度 4px
             self._border_view = View(self._context)
-            border_drawable = GradientDrawable()
-            border_drawable.setColor(0x00000000)  # 内部透明
-            border_drawable.setStroke(4, 0xFF000000)  # 4px 黑色边框
-            border_drawable.setCornerRadius(0)
-            self._border_view.setBackground(border_drawable)
 
-            border_params = FrameLayout.LayoutParams(
+            # 内部 View 使用半透明颜色
+            r, g, b, a = COLOR_PRESETS[self._color_index]['rgba']
+            inner_color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
+            self._border_view.setBackgroundColor(inner_color_int)
+
+            inner_params = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
-            self._border_view.setLayoutParams(border_params)
+            inner_params.setMargins(border_margin, border_margin, border_margin, border_margin)
+            self._border_view.setLayoutParams(inner_params)
             self._overlay_view.addView(self._border_view)
             _java_refs.append(self._border_view)
 
@@ -263,7 +262,7 @@ class OverlayManager:
             self._minimize_btn = View(self._context)
             btn_bg = GradientDrawable()
             btn_bg.setShape(GradientDrawable.OVAL)
-            btn_bg.setColor(0x80000000)  # 半透明黑色圆形
+            btn_bg.setColor(-2147483648)  # 半透明黑色圆形 (0x80000000 as signed int)
             self._minimize_btn.setBackground(btn_bg)
 
             btn_params = FrameLayout.LayoutParams(40, 40)
@@ -328,7 +327,7 @@ class OverlayManager:
 
     def _apply_view_color(self):
         """应用当前颜色到View"""
-        if not self._overlay_view or not self._is_android:
+        if not self._is_android:
             return
 
         try:
@@ -338,7 +337,10 @@ class OverlayManager:
             r, g, b, a = COLOR_PRESETS[self._color_index]['rgba']
             color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
 
-            self._overlay_view.setBackgroundColor(color_int)
+            # 更新内部 View 的颜色（边框通过 FrameLayout 黑色底色实现）
+            target = getattr(self, '_border_view', None) or self._overlay_view
+            if target:
+                target.setBackgroundColor(color_int)
 
             logger.debug(f"应用颜色: {COLOR_PRESETS[self._color_index]['name']}")
         except Exception as e:
@@ -504,8 +506,8 @@ class OverlayManager:
             self._menu_view = FrameLayout(self._context)
 
             bg = GradientDrawable()
-            bg.setColor(0xFFFFFFFF)
-            bg.setCornerRadius(20)
+            bg.setColor(-1)  # 白色 (0xFFFFFFFF as signed int)
+            bg.setCornerRadius(20.0)
             self._menu_view.setBackground(bg)
 
             # 菜单参数：悬浮窗右侧弹出
