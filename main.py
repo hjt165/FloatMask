@@ -299,11 +299,11 @@ class FloatMaskApp(App):
         return True
 
     def on_resume(self):
-        """应用恢复时（从后台返回）"""
-        logger.info("应用恢复")
-        # 重新检测权限状态
+        """应用恢复时（从后台返回，例如用户从设置页返回）"""
+        logger.info("应用恢复，检测权限状态")
         if check_overlay_permission():
-            logger.info("权限已授予")
+            logger.info("权限已授予，跳转到主页")
+            self.screen_manager.current = PAGE_MAIN
 
     def on_stop(self):
         """应用退出时清理资源"""
