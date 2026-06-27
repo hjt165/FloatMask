@@ -238,10 +238,14 @@ class PermissionScreen(Screen):
 
     def on_enter(self):
         """进入页面时检测权限状态"""
+        # 延迟检测权限，等待 Activity 完全恢复
+        Clock.schedule_once(self._check_permission_delayed, 0.5)
+
+    def _check_permission_delayed(self, dt):
+        """延迟检测权限"""
         if check_overlay_permission():
             self.manager.current = PAGE_MAIN
         else:
-            # 显示厂商特定的权限引导文案
             self._update_manufacturer_guide()
 
     def _update_manufacturer_guide(self):
