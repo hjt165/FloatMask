@@ -2,119 +2,167 @@
 # 定义权限引导页的布局和外观
 
 <PermissionScreen>:
-    # 页面背景色
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 1  # 白色背景
+            rgba: 0.96, 0.96, 0.96, 1
         Rectangle:
             pos: self.pos
             size: self.size
 
     BoxLayout:
         orientation: 'vertical'
-        padding: dp(40)
-        spacing: dp(20)
+        padding: dp(24)
+        spacing: dp(0)
 
-        # 占位空间（顶部）
+        # 顶部彩色区域
         Widget:
-            size_hint_y: 0.1
-
-        # 图标区域
-        BoxLayout:
-            size_hint_y: 0.25
-            orientation: 'vertical'
-
-            # 图标背景圆
+            size_hint_y: 0.35
             canvas:
                 Color:
-                    rgba: 1, 0.93, 0.93, 1  # 浅红色背景
+                    rgba: 0.13, 0.59, 0.95, 1
+                RoundedRectangle:
+                    pos: self.x, self.y + dp(16)
+                    size: self.width, self.height
+                    radius: [dp(16)]
+
+                # 锁图标（用 Canvas 画）
+                Color:
+                    rgba: 1, 1, 1, 1
+                Line:
+                    rounded_rectangle: (self.center_x - dp(18), self.center_y - dp(5) + dp(16), dp(36), dp(28), dp(4))
+                    width: 2.5
                 Ellipse:
-                    pos: self.center_x - dp(45), self.center_y - dp(45)
-                    size: dp(90), dp(90)
+                    pos: self.center_x - dp(12), self.center_y + dp(14)
+                    size: dp(24), dp(20)
+                Line:
+                    ellipse: (self.center_x - dp(12), self.center_y + dp(14), dp(24), dp(20))
+                    width: 2.5
 
-            # 锁图标
+                # 标题文字
+                Color:
+                    rgba: 1, 1, 1, 1
+
             Label:
-                text: '🔒'
-                font_size: dp(40)
+                text: '需要悬浮窗权限'
+                font_name: 'Chinese'
+                font_size: dp(22)
+                color: 1, 1, 1, 1
+                bold: True
+                pos: self.parent.x, self.parent.y + dp(36)
+                size: self.parent.width, dp(40)
+                halign: 'center'
+                valign: 'middle'
 
-        # 标题
-        Label:
-            text: '需要悬浮窗权限'
-            font_name: 'Chinese'
-            font_size: dp(24)
-            color: 0.2, 0.2, 0.2, 1
-            bold: True
-            size_hint_y: 0.1
+        # 说明卡片
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.28
+            padding: [dp(20), dp(16)]
+            spacing: dp(8)
 
-        # 说明文字
-        Label:
-            text: '为了能够在其他应用上方显示\n悬浮遮挡框，需要您授权\n"显示在其他应用上层"权限'
-            font_name: 'Chinese'
-            font_size: dp(16)
-            color: 0.5, 0.5, 0.5, 1
-            halign: 'center'
-            text_size: self.size
-            size_hint_y: 0.15
+            canvas:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(12)]
 
-        # 厂商特定引导文案
-        Label:
-            id: guide_text
-            text: ''
-            font_name: 'Chinese'
-            font_size: dp(14)
-            color: 0.8, 0.4, 0.0, 1
-            halign: 'center'
-            text_size: self.size
-            size_hint_y: 0.1
+            Label:
+                text: '为了能够在其他应用上方显示'
+                font_name: 'Chinese'
+                font_size: dp(15)
+                color: 0.35, 0.35, 0.35, 1
+                halign: 'center'
+                text_size: self.size
+                size_hint_y: 0.35
 
-        # 占位空间
+            Label:
+                text: '悬浮遮挡框，需要您授权'
+                font_name: 'Chinese'
+                font_size: dp(15)
+                color: 0.35, 0.35, 0.35, 1
+                halign: 'center'
+                text_size: self.size
+                size_hint_y: 0.35
+
+            Label:
+                text: '"显示在其他应用上层"权限'
+                font_name: 'Chinese'
+                font_size: dp(15)
+                color: 0.13, 0.59, 0.95, 1
+                bold: True
+                halign: 'center'
+                text_size: self.size
+                size_hint_y: 0.35
+
+        # 厂商引导提示
+        BoxLayout:
+            size_hint_y: 0.08
+            padding: [dp(16), dp(8)]
+
+            canvas:
+                Color:
+                    rgba: 1, 0.95, 0.85, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(8)]
+
+            Label:
+                id: guide_text
+                text: '请在设置中开启"显示在其他应用上层"或"悬浮窗"权限'
+                font_name: 'Chinese'
+                font_size: dp(13)
+                color: 0.7, 0.4, 0.0, 1
+                halign: 'center'
+                text_size: self.size
+
+        # 弹性空间
         Widget:
-            size_hint_y: 0.1
+            size_hint_y: 0.04
 
-        # 跳转设置按钮
+        # 前往设置按钮
         Button:
             text: '前往系统设置'
             font_name: 'Chinese'
-            font_size: dp(18)
+            font_size: dp(17)
             size_hint_y: 0.1
-            background_color: 0.13, 0.59, 0.95, 1  # 蓝色 #2196F3
+            background_color: 0, 0, 0, 0
             color: 1, 1, 1, 1
             bold: True
             on_press: root.open_settings()
 
             canvas.before:
                 Color:
-                    rgba: self.background_color
+                    rgba: 0.13, 0.59, 0.95, 1
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(8)]
+                    radius: [dp(10)]
 
         # 返回按钮
         Button:
             text: '返回'
             font_name: 'Chinese'
-            font_size: dp(16)
+            font_size: dp(15)
             size_hint_y: 0.08
-            background_color: 0.95, 0.95, 0.95, 1
-            color: 0.4, 0.4, 0.4, 1
+            background_color: 0, 0, 0, 0
+            color: 0.5, 0.5, 0.5, 1
             on_press: root.go_back()
 
             canvas.before:
                 Color:
-                    rgba: self.background_color
+                    rgba: 0.93, 0.93, 0.93, 1
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(8)]
+                    radius: [dp(10)]
 
-        # 提示文字
+        # 底部提示
         Label:
-            text: '💡 提示：授权后即可使用'
-            font_size: dp(14)
-            color: 0.6, 0.6, 0.6, 1
-            size_hint_y: 0.1
-
-        # 占位空间（底部）
-        Widget:
+            text: '授权后即可使用全部功能'
+            font_name: 'Chinese'
+            font_size: dp(12)
+            color: 0.7, 0.7, 0.7, 1
             size_hint_y: 0.05

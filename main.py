@@ -106,15 +106,17 @@ class MainScreen(Screen):
     def update_status(self):
         """更新悬浮窗状态显示"""
         if self.overlay_manager and self.overlay_manager.is_active():
-            self.ids.status_icon.text = '◉'
+            self.ids.status_icon.text = 'ON'
             self.ids.status_icon.color = (0.3, 0.8, 0.3, 1)  # 绿色
             self.ids.status_text.text = '悬浮窗已激活'
             self.ids.toggle_button.text = '停止悬浮窗'
+            self.ids.status_desc.text = '悬浮窗正在运行中'
         else:
-            self.ids.status_icon.text = '◎'
-            self.ids.status_icon.color = (0.7, 0.7, 0.7, 1)  # 灰色
+            self.ids.status_icon.text = 'FM'
+            self.ids.status_icon.color = (0.13, 0.59, 0.95, 1)  # 蓝色
             self.ids.status_text.text = '悬浮窗未激活'
             self.ids.toggle_button.text = '启动悬浮窗'
+            self.ids.status_desc.text = '点击下方按钮启动悬浮窗'
 
     def toggle_overlay(self):
         """切换悬浮窗状态"""

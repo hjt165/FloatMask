@@ -2,144 +2,170 @@
 # 定义主页的布局和外观
 
 <MainScreen>:
-    # 页面背景色
     canvas.before:
         Color:
-            rgba: 0.95, 0.95, 0.95, 1  # 浅灰色背景
+            rgba: 0.96, 0.96, 0.96, 1
         Rectangle:
             pos: self.pos
             size: self.size
 
     BoxLayout:
         orientation: 'vertical'
-        padding: dp(20)
-        spacing: dp(15)
+        padding: 0
+        spacing: 0
 
-        # 顶部标题栏
+        # 顶部蓝色标题栏
         BoxLayout:
-            size_hint_y: 0.08
-            padding: [dp(10), 0]
+            size_hint_y: 0.12
+            padding: [dp(20), dp(12)]
+
+            canvas:
+                Color:
+                    rgba: 0.13, 0.59, 0.95, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
             Label:
                 text: 'FloatMask'
                 font_size: dp(22)
-                color: 0.2, 0.2, 0.2, 1
+                color: 1, 1, 1, 1
                 bold: True
                 halign: 'left'
                 text_size: self.size
                 valign: 'middle'
 
-        # 状态卡片
+            Label:
+                text: 'v0.1.0'
+                font_size: dp(12)
+                color: 1, 1, 1, 0.7
+                halign: 'right'
+                text_size: self.size
+                valign: 'middle'
+
+        # 内容区域
         BoxLayout:
             orientation: 'vertical'
-            size_hint_y: 0.35
             padding: dp(20)
-            spacing: dp(10)
+            spacing: dp(16)
 
-            canvas:
-                Color:
-                    rgba: 1, 1, 1, 1  # 白色卡片
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(10)]
-
-            # 状态图标
+            # 状态卡片
             BoxLayout:
-                size_hint_y: 0.5
                 orientation: 'vertical'
+                size_hint_y: 0.4
+                padding: dp(20)
+                spacing: dp(12)
 
-                # 圆形图标背景
                 canvas:
                     Color:
-                        rgba: 0.85, 0.85, 0.85, 1  # 灰色背景
-                    Ellipse:
-                        pos: self.center_x - dp(35), self.center_y - dp(35)
-                        size: dp(70), dp(70)
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(12)]
 
+                # 状态图标区域
+                BoxLayout:
+                    size_hint_y: 0.5
+
+                    canvas:
+                        # 圆形背景
+                        Color:
+                            rgba: 0.93, 0.93, 0.93, 1
+                        Ellipse:
+                            pos: self.center_x - dp(30), self.center_y - dp(30)
+                            size: dp(60), dp(60)
+
+                    Label:
+                        id: status_icon
+                        text: 'FM'
+                        font_size: dp(24)
+                        color: 0.13, 0.59, 0.95, 1
+                        bold: True
+
+                # 状态文字
                 Label:
-                    id: status_icon
-                    text: '◎'
-                    font_size: dp(36)
-                    color: 0.7, 0.7, 0.7, 1
+                    id: status_text
+                    text: '悬浮窗未激活'
+                    font_name: 'Chinese'
+                    font_size: dp(18)
+                    color: 0.3, 0.3, 0.3, 1
+                    bold: True
+                    size_hint_y: 0.25
 
-            # 状态文字
-            Label:
-                id: status_text
-                text: '悬浮窗未激活'
+                # 状态描述
+                Label:
+                    id: status_desc
+                    text: '点击下方按钮启动悬浮窗'
+                    font_name: 'Chinese'
+                    font_size: dp(14)
+                    color: 0.6, 0.6, 0.6, 1
+                    size_hint_y: 0.25
+
+            # 启动/停止按钮
+            Button:
+                id: toggle_button
+                text: '启动悬浮窗'
                 font_name: 'Chinese'
-                font_size: dp(18)
-                color: 0.4, 0.4, 0.4, 1
-                size_hint_y: 0.3
+                font_size: dp(17)
+                size_hint_y: 0.1
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                bold: True
+                on_press: root.toggle_overlay()
 
-            # 状态描述
+                canvas.before:
+                    Color:
+                        rgba: 0.13, 0.59, 0.95, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+
+            # 功能按钮行
+            BoxLayout:
+                size_hint_y: 0.08
+                spacing: dp(12)
+
+                Button:
+                    text: '检测权限'
+                    font_name: 'Chinese'
+                    font_size: dp(14)
+                    background_color: 0, 0, 0, 0
+                    color: 0.4, 0.4, 0.4, 1
+                    on_press: root.check_permission()
+
+                    canvas.before:
+                        Color:
+                            rgba: 0.93, 0.93, 0.93, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(8)]
+
+                Button:
+                    text: '设置'
+                    font_name: 'Chinese'
+                    font_size: dp(14)
+                    background_color: 0, 0, 0, 0
+                    color: 0.4, 0.4, 0.4, 1
+                    on_press: root.open_settings_page()
+
+                    canvas.before:
+                        Color:
+                            rgba: 0.93, 0.93, 0.93, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(8)]
+
+            # 弹性空间
+            Widget:
+                size_hint_y: 0.34
+
+            # 底部信息
             Label:
-                id: status_desc
-                text: '点击下方按钮启动悬浮窗'
-                font_name: 'Chinese'
-                font_size: dp(14)
-                color: 0.6, 0.6, 0.6, 1
-                size_hint_y: 0.2
-
-        # 启动/停止按钮
-        Button:
-            id: toggle_button
-            text: '启动悬浮窗'
-            font_name: 'Chinese'
-            font_size: dp(18)
-            size_hint_y: 0.12
-            background_color: 0.13, 0.59, 0.95, 1  # 蓝色 #2196F3
-            color: 1, 1, 1, 1
-            bold: True
-            on_press: root.toggle_overlay()
-
-            canvas.before:
-                Color:
-                    rgba: self.background_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(8)]
-
-        # 检测权限按钮
-        Button:
-            text: '检测权限'
-            font_name: 'Chinese'
-            font_size: dp(16)
-            size_hint_y: 0.08
-            background_color: 0.9, 0.9, 0.9, 1
-            color: 0.3, 0.3, 0.3, 1
-            on_press: root.check_permission()
-
-            canvas.before:
-                Color:
-                    rgba: self.background_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(8)]
-
-        # 设置按钮
-        Button:
-            text: '设置'
-            font_name: 'Chinese'
-            font_size: dp(16)
-            size_hint_y: 0.08
-            background_color: 0.9, 0.9, 0.9, 1
-            color: 0.3, 0.3, 0.3, 1
-            on_press: root.open_settings_page()
-
-            canvas.before:
-                Color:
-                    rgba: self.background_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(8)]
-
-        # 底部信息
-        Label:
-            text: 'v0.1.0 | Made with Python'
-            font_size: dp(12)
-            color: 0.7, 0.7, 0.7, 1
-            size_hint_y: 0.05
+                text: 'Made with Python + Kivy'
+                font_size: dp(11)
+                color: 0.75, 0.75, 0.75, 1
+                size_hint_y: 0.05

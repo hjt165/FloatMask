@@ -2,74 +2,75 @@
 # 定义启动页的布局和外观
 
 <SplashScreen>:
-    # 页面背景色
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 1  # 白色背景
+            rgba: 0.13, 0.59, 0.95, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    
+
     BoxLayout:
         orientation: 'vertical'
-        padding: dp(50)
-        spacing: dp(20)
-        
-        # 占位空间（顶部）
+        padding: dp(40)
+        spacing: dp(16)
+
+        # 弹性空间
         Widget:
-            size_hint_y: 0.2
-        
+            size_hint_y: 0.25
+
         # 应用图标区域
         BoxLayout:
-            size_hint_y: 0.3
+            size_hint_y: 0.25
             orientation: 'vertical'
-            
-            # 图标占位（圆形）
+
+            # FM 图标
             canvas:
                 Color:
-                    rgba: 0.13, 0.59, 0.95, 1  # 蓝色 #2196F3
+                    rgba: 1, 1, 1, 0.2
                 Ellipse:
-                    pos: self.center_x - dp(40), self.center_y - dp(40)
-                    size: dp(80), dp(80)
-            
+                    pos: self.center_x - dp(45), self.center_y - dp(45)
+                    size: dp(90), dp(90)
+                Color:
+                    rgba: 1, 1, 1, 1
+
             Label:
                 text: 'FM'
-                font_size: dp(32)
+                font_size: dp(36)
                 color: 1, 1, 1, 1
                 bold: True
-        
+
         # 应用名称
         Label:
             text: 'FloatMask'
-            font_size: dp(32)
-            color: 0.2, 0.2, 0.2, 1
+            font_size: dp(30)
+            color: 1, 1, 1, 1
             bold: True
-            size_hint_y: 0.15
-        
+            size_hint_y: 0.12
+
         # 副标题
         Label:
             text: '智能字幕遮挡工具'
             font_name: 'Chinese'
             font_size: dp(16)
-            color: 0.5, 0.5, 0.5, 1
-            size_hint_y: 0.1
+            color: 1, 1, 1, 0.8
+            size_hint_y: 0.08
 
         # 状态提示
         Label:
             id: status_label
             text: '正在检测权限...'
             font_name: 'Chinese'
-            font_size: dp(14)
-            color: 0.6, 0.6, 0.6, 1
-            size_hint_y: 0.1
-        
-        # 占位空间（底部）
+            font_size: dp(13)
+            color: 1, 1, 1, 0.6
+            size_hint_y: 0.08
+
+        # 弹性空间
         Widget:
-            size_hint_y: 0.15
-        
+            size_hint_y: 0.3
+
         # 版本号
         Label:
             text: 'v0.1.0'
             font_size: dp(12)
-            color: 0.7, 0.7, 0.7, 1
+            color: 1, 1, 1, 0.5
             size_hint_y: 0.05
