@@ -171,6 +171,7 @@ class OverlayManager:
             Gravity = autoclass('android.view.Gravity')
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             FrameLayout = autoclass('android.widget.FrameLayout')
+            FrameLayout_LayoutParams = autoclass('android.widget.FrameLayout$LayoutParams')
             Color = autoclass('android.graphics.Color')
 
             # 获取系统上下文和服务
@@ -208,9 +209,9 @@ class OverlayManager:
             inner_color_int = Color.argb(int(a * 255), int(r * 255), int(g * 255), int(b * 255))
             self._border_view.setBackgroundColor(inner_color_int)
 
-            inner_params = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
+            inner_params = FrameLayout_LayoutParams(
+                FrameLayout_LayoutParams.MATCH_PARENT,
+                FrameLayout_LayoutParams.MATCH_PARENT
             )
             inner_params.setMargins(border_margin, border_margin, border_margin, border_margin)
             self._border_view.setLayoutParams(inner_params)
@@ -266,7 +267,7 @@ class OverlayManager:
             btn_bg.setColor(-2147483648)  # 半透明黑色圆形 (0x80000000 as signed int)
             self._minimize_btn.setBackground(btn_bg)
 
-            btn_params = FrameLayout.LayoutParams(40, 40)
+            btn_params = FrameLayout_LayoutParams(40, 40)
             btn_params.gravity = Gravity.TOP | Gravity.RIGHT
             self._minimize_btn.setLayoutParams(btn_params)
 
