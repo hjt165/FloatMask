@@ -294,7 +294,68 @@ class FloatMaskApp(App):
         # 设置初始页面
         self.screen_manager.current = PAGE_SPLASH
 
+        # 注册广播接收器（用于ADB命令控制悬浮窗）
+        self._receiver = None
+        self._register_broadcast_receiver()
+
         return self.screen_manager
+
+    def _register_broadcast_receiver(self):
+        """注册广播接收器，用于ADB命令触发悬浮窗
+
+        支持的广播命令：
+        - adb shell am broadcast -a org.floatmask.START_OVERLAY
+        - adb shell am broadcast -a org.floatmask.STOP_OVERLAY
+        - adb shell am broadcast -a org.floatmask.TOGGLE_OVERLAY
+        """
+        try:
+            from jnius import autoclass, java_callback, PythonJavaClass
+
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            IntentFilter = autoclass('android.content.IntentFilter')
+
+            app = self
+
+            class OverlayReceiver(PythonJavaClass):
+                """广播接收器：接收ADB命令控制悬浮窗"""
+                __javainterfaces__ = ['android/content/BroadcastReceiver']
+
+                def __init__(self):
+                    super().__init__()
+                    self._app = app
+
+                @java_callback('android.content.Context', 'android.content.Intent')
+                def onReceive(self, ctx, intent):
+                    action = intent.getAction()
+                    logger.info(f"收到广播: {action}")
+                    # 在主线程执行UI操作
+                    Clock.schedule_once(lambda dt: self._handle_action(action), 0)
+
+                def _handle_action(self, action):
+                    try:
+                        main = self._app.screen_manager.get_screen(PAGE_MAIN)
+                        if action == 'org.floatmask.START_OVERLAY':
+                            if not main.overlay_manager or not main.overlay_manager.is_active():
+                                main.toggle_overlay()
+                        elif action == 'org.floatmask.STOP_OVERLAY':
+                            if main.overlay_manager and main.overlay_manager.is_active():
+                                main.toggle_overlay()
+                        elif action == 'org.floatmask.TOGGLE_OVERLAY':
+                            main.toggle_overlay()
+                    except Exception as e:
+                        logger.error(f"广播处理失败: {e}")
+
+            self._receiver = OverlayReceiver()
+            intent_filter = IntentFilter()
+            intent_filter.addAction('org.floatmask.START_OVERLAY')
+            intent_filter.addAction('org.floatmask.STOP_OVERLAY')
+            intent_filter.addAction('org.floatmask.TOGGLE_OVERLAY')
+
+            context = PythonActivity.mActivity.getApplicationContext()
+            context.registerReceiver(self._receiver, intent_filter)
+            logger.info("广播接收器已注册 (START/STOP/TOGGLE_OVERLAY)")
+        except Exception as e:
+            logger.error(f"注册广播接收器失败: {e}")
 
     def on_pause(self):
         """应用暂停时（切换到后台）"""
@@ -311,6 +372,17 @@ class FloatMaskApp(App):
     def on_stop(self):
         """应用退出时清理资源"""
         logger.info("应用退出，清理资源")
+
+        # 注销广播接收器
+        if self._receiver:
+            try:
+                from jnius import autoclass
+                PythonActivity = autoclass('org.kivy.android.PythonActivity')
+                context = PythonActivity.mActivity.getApplicationContext()
+                context.unregisterReceiver(self._receiver)
+                logger.info("广播接收器已注销")
+            except Exception as e:
+                logger.error(f"注销广播接收器失败: {e}")
 
         # 获取主页并清理悬浮窗
         try:
