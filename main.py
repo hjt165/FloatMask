@@ -324,9 +324,12 @@ class FloatMaskApp(App):
                         if cmd:
                             logger.info(f"读取到命令文件: {cmd}")
                             Clock.schedule_once(lambda _: self._handle_command(cmd), 0)
+                    else:
+                        logger.debug(f"命令文件不存在: {CMD_FILE}")
                 except Exception as e:
                     logger.debug(f"命令文件检查失败: {e}")
 
+            logger.info(f"命令文件路径: {CMD_FILE}")
             Clock.schedule_interval(check_command_file, 0.5)
             logger.info("命令轮询器已注册 (start/stop/toggle)")
         except Exception as e:
