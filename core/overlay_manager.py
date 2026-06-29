@@ -233,14 +233,15 @@ class OverlayManager:
                 @java_method('(Landroid/view/View;Landroid/view/MotionEvent;)Z')
                 def onTouch(self, view, event):
                     try:
-                        action = int(event.getAction())
+                        # 使用 getActionMasked() 获取基础动作类型
+                        action = int(event.getActionMasked())
                         x = int(event.getX())
                         y = int(event.getY())
 
                         # 触摸事件类型映射
-                        ACTION_DOWN = 0  # MotionEvent.ACTION_DOWN
-                        ACTION_MOVE = 2  # MotionEvent.ACTION_MOVE
-                        ACTION_UP = 1    # MotionEvent.ACTION_UP
+                        ACTION_DOWN = 0   # MotionEvent.ACTION_DOWN
+                        ACTION_MOVE = 2   # MotionEvent.ACTION_MOVE
+                        ACTION_UP = 1     # MotionEvent.ACTION_UP
 
                         if action == ACTION_DOWN:
                             logger.info(f"TouchBridge DOWN: ({x}, {y})")
@@ -532,7 +533,7 @@ class OverlayManager:
 
                 @java_method('(Landroid/view/View;Landroid/view/MotionEvent;)Z')
                 def onTouch(self, view, event):
-                    action = int(event.getAction())
+                    action = int(event.getActionMasked())
                     if action == 0:  # ACTION_DOWN
                         y = int(event.getY())
                         if y < 40:
