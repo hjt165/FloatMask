@@ -173,6 +173,7 @@ class OverlayManager:
             FrameLayout = autoclass('android.widget.FrameLayout')
             FrameLayout_LayoutParams = autoclass('android.widget.FrameLayout$LayoutParams')
             Color = autoclass('android.graphics.Color')
+            GradientDrawable = autoclass('android.graphics.drawable.GradientDrawable')
 
             # 获取系统上下文和服务
             self._context = PythonActivity.mActivity
