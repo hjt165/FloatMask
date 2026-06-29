@@ -310,10 +310,9 @@ class FloatMaskApp(App):
         - adb shell run-as org.floatmask.floatmask sh -c 'echo stop > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd'
         """
         try:
-            from jnius import autoclass
             import os
 
-            CMD_FILE = os.path.join('/data/data/org.floatmask.floatmask/files/app', '.floatmask_cmd')
+            CMD_FILE = os.path.join(os.getcwd(), '.floatmask_cmd')
             app = self
 
             def check_command_file(dt):
