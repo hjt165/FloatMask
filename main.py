@@ -296,62 +296,56 @@ class FloatMaskApp(App):
 
         # 注册广播接收器（用于ADB命令控制悬浮窗）
         self._receiver = None
-        self._register_intent_poller()
+        self._register_command_poller()
 
         return self.screen_manager
 
-    def _register_intent_poller(self):
-        """注册Intent轮询器，用于接收ADB命令触发悬浮窗
+    def _register_command_poller(self):
+        """注册命令轮询器，用于接收ADB命令触发悬浮窗
 
-        替代BroadcastReceiver（PyJNIus不支持继承抽象类）
-        通过am start发送Intent，App定期检查Intent action
+        通过文件读写实现ADB与App通信
         支持的命令：
-        - adb shell am start -a org.floatmask.START_OVERLAY -n org.floatmask.floatmask/org.kivy.android.PythonActivity
-        - adb shell am start -a org.floatmask.STOP_OVERLAY -n org.floatmask.floatmask/org.kivy.android.PythonActivity
-        - adb shell am start -a org.floatmask.TOGGLE_OVERLAY -n org.floatmask.floatmask/org.kivy.android.PythonActivity
+        - adb shell echo start > /data/local/tmp/floatmask_cmd
+        - adb shell echo stop > /data/local/tmp/floatmask_cmd
+        - adb shell echo toggle > /data/local/tmp/floatmask_cmd
         """
         try:
-            from jnius import autoclass
+            import os
 
-            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            CMD_FILE = '/data/local/tmp/floatmask_cmd'
             app = self
 
-            def check_intent_action(dt):
+            def check_command_file(dt):
                 try:
-                    activity = PythonActivity.mActivity
-                    if activity is None:
-                        return
-                    intent = activity.getIntent()
-                    if intent is None:
-                        return
-                    action = intent.getAction()
-                    if action:
-                        logger.info(f"检测到Intent action: {action}")
-                        # 清除已处理的action，避免重复触发
-                        intent.setAction(None)
-                        Clock.schedule_once(lambda _: self._handle_intent_action(action), 0)
+                    if os.path.exists(CMD_FILE):
+                        with open(CMD_FILE, 'r') as f:
+                            cmd = f.read().strip()
+                        os.remove(CMD_FILE)
+                        if cmd:
+                            logger.info(f"读取到命令文件: {cmd}")
+                            Clock.schedule_once(lambda _: self._handle_command(cmd), 0)
                 except Exception as e:
-                    logger.debug(f"Intent轮询检查失败: {e}")
+                    logger.debug(f"命令文件检查失败: {e}")
 
-            Clock.schedule_interval(check_intent_action, 1)
-            logger.info("Intent轮询器已注册 (START/STOP/TOGGLE_OVERLAY)")
+            Clock.schedule_interval(check_command_file, 0.5)
+            logger.info("命令轮询器已注册 (start/stop/toggle)")
         except Exception as e:
-            logger.error(f"注册Intent轮询器失败: {e}")
+            logger.error(f"注册命令轮询器失败: {e}")
 
-    def _handle_intent_action(self, action):
-        """处理Intent action触发的操作"""
+    def _handle_command(self, cmd):
+        """处理命令文件触发的操作"""
         try:
             main = self.screen_manager.get_screen(PAGE_MAIN)
-            if action == 'org.floatmask.START_OVERLAY':
+            if cmd == 'start':
                 if not main.overlay_manager or not main.overlay_manager.is_active():
                     main.toggle_overlay()
-            elif action == 'org.floatmask.STOP_OVERLAY':
+            elif cmd == 'stop':
                 if main.overlay_manager and main.overlay_manager.is_active():
                     main.toggle_overlay()
-            elif action == 'org.floatmask.TOGGLE_OVERLAY':
+            elif cmd == 'toggle':
                 main.toggle_overlay()
         except Exception as e:
-            logger.error(f"Intent action处理失败: {e}")
+            logger.error(f"命令处理失败: {e}")
 
     def on_pause(self):
         """应用暂停时（切换到后台）"""
