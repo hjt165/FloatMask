@@ -305,18 +305,15 @@ class FloatMaskApp(App):
 
         通过文件读写实现ADB与App通信
         支持的命令：
-        - adb shell echo start > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd
-        - adb shell echo stop > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd
-        - adb shell echo toggle > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd
+        - adb shell run-as org.floatmask.floatmask sh -c 'echo toggle > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd'
+        - adb shell run-as org.floatmask.floatmask sh -c 'echo start > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd'
+        - adb shell run-as org.floatmask.floatmask sh -c 'echo stop > /data/data/org.floatmask.floatmask/files/app/.floatmask_cmd'
         """
         try:
             from jnius import autoclass
             import os
 
-            PythonActivity = autoclass('org.kivy.android.PythonActivity')
-            context = PythonActivity.mActivity.getApplicationContext()
-            app_dir = context.getFilesDir().getPath()
-            CMD_FILE = os.path.join(app_dir, '.floatmask_cmd')
+            CMD_FILE = os.path.join('/data/data/org.floatmask.floatmask/files/app', '.floatmask_cmd')
             app = self
 
             def check_command_file(dt):
