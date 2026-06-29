@@ -309,7 +309,7 @@ class FloatMaskApp(App):
         - adb shell am broadcast -a org.floatmask.TOGGLE_OVERLAY
         """
         try:
-            from jnius import autoclass, java_callback, PythonJavaClass
+            from jnius import autoclass, PythonJavaClass, java_method
 
             PythonActivity = autoclass('org.kivy.android.PythonActivity')
             IntentFilter = autoclass('android.content.IntentFilter')
@@ -324,7 +324,7 @@ class FloatMaskApp(App):
                     super().__init__()
                     self._app = app
 
-                @java_callback('android.content.Context', 'android.content.Intent')
+                @java_method('(Landroid/content/Context;Landroid/content/Intent;)V')
                 def onReceive(self, ctx, intent):
                     action = intent.getAction()
                     logger.info(f"收到广播: {action}")
